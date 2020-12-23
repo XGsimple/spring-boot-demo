@@ -1,7 +1,6 @@
 package com.xkcoding.orm.mybatis.plus.entity;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,9 +8,6 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Date;
-
-import static com.baomidou.mybatisplus.annotation.FieldFill.INSERT;
-import static com.baomidou.mybatisplus.annotation.FieldFill.INSERT_UPDATE;
 
 /**
  * <p>
@@ -32,12 +28,19 @@ public class User implements Serializable {
     /**
      * 主键
      */
+    @TableId(type = IdType.AUTO)
     private Long id;
 
     /**
      * 用户名
      */
+    //@TableField(value = "name")//字段名与数据库字段名不一致时采用该形式进行映射
     private String name;
+
+    /**
+     * 年龄
+     */
+    private Integer age;
 
     /**
      * 加密后的密码
@@ -65,19 +68,32 @@ public class User implements Serializable {
     private Integer status;
 
     /**
+     * 版本号，用于乐观锁
+     */
+    @TableField(fill = FieldFill.INSERT)//插入数据时填充
+    private Integer version;
+
+    /**
+     * 逻辑删除
+     */
+    @TableField(fill = FieldFill.INSERT)//插入数据时填充
+    private Integer deleted;
+
+    /**
      * 创建时间
      */
-    @TableField(fill = INSERT)
+    @TableField(fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 上次登录时间
      */
+    @TableField(fill = FieldFill.INSERT_UPDATE)//插入和更新操作时自动更新时间
     private Date lastLoginTime;
 
     /**
      * 上次更新时间
      */
-    @TableField(fill = INSERT_UPDATE)
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private Date lastUpdateTime;
 }
