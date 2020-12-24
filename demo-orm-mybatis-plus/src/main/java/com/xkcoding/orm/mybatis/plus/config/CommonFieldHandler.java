@@ -27,10 +27,12 @@ public class CommonFieldHandler implements MetaObjectHandler {
 //        this.setFieldValByName("createTime", new Date(), metaObject);
 //        this.setFieldValByName("lastUpdateTime", new Date(), metaObject);
 
-        this.strictInsertFill(metaObject,"createTime", LocalDateTime.class,LocalDateTime.now());
-        this.strictInsertFill(metaObject,"lastUpdateTime",LocalDateTime.class,LocalDateTime.now());
-        this.strictInsertFill(metaObject,"version",Integer.class,1);
-        this.strictInsertFill(metaObject,"deleted",Integer.class,0);
+        this.strictInsertFill(metaObject, "createTime", Date.class, new Date());
+        this.strictInsertFill(metaObject, "lastUpdateTime", Date.class, new Date());
+        //this.strictInsertFill(metaObject, "createTime", LocalDateTime.class, LocalDateTime.now());
+        //this.strictInsertFill(metaObject, "lastUpdateTime", LocalDateTime.class, LocalDateTime.now());
+        this.strictInsertFill(metaObject, "version", Integer.class, 1);
+        this.strictInsertFill(metaObject, "deleted", Integer.class, 0);
     }
 
     @Override

@@ -70,6 +70,7 @@ public class User implements Serializable {
     /**
      * 版本号，用于乐观锁
      */
+    @Version//乐观锁注解
     @TableField(fill = FieldFill.INSERT)//插入数据时填充
     private Integer version;
 

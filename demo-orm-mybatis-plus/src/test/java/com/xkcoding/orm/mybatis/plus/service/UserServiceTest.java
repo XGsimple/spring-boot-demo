@@ -9,8 +9,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.additional.query.impl.LambdaQueryChainWrapper;
-import com.baomidou.mybatisplus.extension.service.additional.query.impl.QueryChainWrapper;
 import com.xkcoding.orm.mybatis.plus.SpringBootDemoOrmMybatisPlusApplicationTests;
 import com.xkcoding.orm.mybatis.plus.entity.User;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +18,9 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -53,9 +54,9 @@ public class UserServiceTest extends SpringBootDemoOrmMybatisPlusApplicationTest
     @Test
     public void testSaveList() {
         List<User> userList = Lists.newArrayList();
-        for (int i = 3; i < 24; i++) {
+        for (int i = 0; i < 21; i++) {
             String salt = IdUtil.fastSimpleUUID();
-            User user = User.builder().name("user_" + i).age(RandomUtil.randomInt(10, 100)).password(SecureUtil.md5("123456" + salt)).salt(salt).email("testSave" + i + "@xkcoding.com").phoneNumber("1730000000" + i).status(1).lastLoginTime(new DateTime()).build();
+            User user = User.builder().name("user_" + i).age(RandomUtil.randomInt(10, 100)).password(SecureUtil.md5("123456" + salt)).salt(salt).email("testSave" + i + "@xkcoding.com").phoneNumber("1730000000" + i).status(1).build();
             userList.add(user);
         }
         boolean batch = userService.saveBatch(userList);
@@ -159,10 +160,44 @@ public class UserServiceTest extends SpringBootDemoOrmMybatisPlusApplicationTest
         //LambdaQueryWrapper<User> lambdaQueryWrapper = new QueryWrapper<User>().lambda();
         //LambdaQueryWrapper<User> lambdaQueryWrapper = Wrappers.<User>lambdaQuery();
         //LambdaQueryChainWrapper<User> lambdaQueryWrapper = userService.lambdaQuery();
-        lambdaQueryWrapper.select(User::getName,User::getAge).likeRight(User::getName, "user").lt(User::getAge,40).or().gt(User::getAge,50);
+        lambdaQueryWrapper.select(User::getName, User::getAge).likeRight(User::getName, "user").lt(User::getAge, 40).or().gt(User::getAge, 50);
         List<User> list = userService.list(lambdaQueryWrapper);
         log.debug("【list】= {}", list);
 
+    }
+
+    /**
+     * 测试乐观锁成功案例
+     * 单线程情况，更新操作肯定成功
+     * 同时version加1
+     */
+    @Test
+    public void optimisticLockerInterceptor1Test() {
+        //1、查询用户
+        User user = userService.getById(1L);
+        //2、修改用户信息
+        user.setAge(10);
+        //3、执行更新操作
+        userService.updateById(user);
+    }
+
+    /**
+     * 测试乐观锁成功案例
+     * 多线程情况
+     */
+    @Test
+    public void optimisticLockerInterceptorMultiTest() throws InterruptedException {
+        final int THREAD_SIZE = 5;
+        ExecutorService executorService = Executors.newFixedThreadPool(THREAD_SIZE);
+        //1、查询用户
+        User user = userService.getById(1L);
+        //2、修改用户信息
+        user.setAge(20);
+        //3、多线程并发执行更新操作
+        for (int i = 0; i < THREAD_SIZE; i++) {
+            executorService.execute(() -> userService.updateById(user));
+        }
+        TimeUnit.SECONDS.sleep(2);
     }
 
 }
