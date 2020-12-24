@@ -6,6 +6,7 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -170,6 +171,109 @@ public class UserServiceTest extends SpringBootDemoOrmMybatisPlusApplicationTest
         List<User> list = userService.list(lambdaQueryWrapper);
         log.debug("【list】= {}", list);
 
+        //区间查询
+
+    }
+
+
+    /**
+     * between区间查询，查找用户年龄在20-30的用户
+     */
+    @Test
+    public void wrapper1Test() {
+        LambdaQueryWrapper<User> lambdaQueryWrapper = Wrappers.<User>lambdaQuery();
+        lambdaQueryWrapper.select(User::getName);
+        lambdaQueryWrapper.between(User::getAge, 20, 30);//区间
+        int count = userService.count(lambdaQueryWrapper);
+        log.debug("【between】{}人 : 20到30年龄区间", count);
+    }
+
+    /**
+     * id在子查询中查出来
+     * SELECT name,age
+     * FROM orm_user
+     * WHERE deleted=0 AND (id IN (select id from user where id < 3))
+     */
+    @Test
+    public void wrapper2Test() {
+        LambdaQueryWrapper<User> lambdaQueryWrapper = Wrappers.<User>lambdaQuery();
+        lambdaQueryWrapper.select(User::getName, User::getAge);
+        lambdaQueryWrapper.inSql(User::getId, "select id from user where id < 3");
+        List<User> users = userService.list(lambdaQueryWrapper);
+        users.forEach(System.out::println);
+    }
+
+    /**
+     * func 方法(主要方便在出现if...else下调用不同方法能不断链)
+     * SELECT name,age FROM orm_user WHERE deleted=0 AND (age = 22)
+     */
+    @Test
+    public void wrapper3Test() {
+        LambdaQueryWrapper<User> lambdaQueryWrapper = Wrappers.<User>lambdaQuery();
+        lambdaQueryWrapper.select(User::getName, User::getAge);
+        boolean condition = true;
+        lambdaQueryWrapper.func(i -> {
+                if (condition) {
+                    i.eq(User::getAge, 22);
+                } else {
+                    i.eq(User::getAge, 33);
+                }
+            }
+        );
+        List<User> users = userService.list(lambdaQueryWrapper);
+        users.forEach(System.out::println);
+    }
+
+    /**
+     * nested嵌套
+     * SELECT name,age
+     * FROM orm_user
+     * WHERE deleted=0 AND (name LIKE ? OR (age > ? AND deleted = ?))
+     */
+    @Test
+    public void wrapper4Test() {
+        LambdaQueryWrapper<User> lambdaQueryWrapper = Wrappers.<User>lambdaQuery();
+        lambdaQueryWrapper.select(User::getName, User::getAge);
+        lambdaQueryWrapper
+            .likeRight(User::getName, "user")
+            .or()
+            .nested(i -> i.gt(User::getAge, 50).eq(User::getDeleted,0));
+        List<User> users = userService.list(lambdaQueryWrapper);
+        users.forEach(System.out::println);
+    }
+
+    /**
+     *apply 拼接sql
+     * 该方法可用于数据库函数 动态入参的params对应前面applySql内部的{index}部分.
+     * 这样是不会有sql注入风险的,反之会有!
+     *SELECT name,age
+     *FROM orm_user
+     *WHERE deleted=0 AND (date_format(create_time,'%Y-%m-%d')=‘2020-12-24’)
+     */
+    @Test
+    public void wrapper5Test() {
+        LambdaQueryWrapper<User> lambdaQueryWrapper = Wrappers.<User>lambdaQuery();
+        lambdaQueryWrapper.select(User::getName, User::getCreateTime);
+        lambdaQueryWrapper.apply("date_format(create_time,'%Y-%m-%d')={0}","2020-12-23");
+        List<User> users = userService.list(lambdaQueryWrapper);
+        users.forEach(System.out::println);
+    }
+
+    /**
+     * select的字段筛选
+     * 过滤查询的字段信息(主键除外!)
+     * 例1: 只要 java 字段名以 "test" 开头的 -> select(i -> i.getProperty().startsWith("test"))
+     * 例2: 只要 java 字段属性是 CharSequence 类型的 -> select(TableFieldInfo::isCharSequence)
+     * 例3: 只要 java 字段没有填充策略的 -> select(i -> i.getFieldFill() == FieldFill.DEFAULT)
+     * 例4: 要全部字段 -> select(i -> true)
+     * 例5: 只要主键字段 -> select(i -> false)
+     */
+    @Test
+    public void wrapper6Test() {
+        LambdaQueryWrapper<User> lambdaQueryWrapper = Wrappers.<User>lambdaQuery();
+        lambdaQueryWrapper.select(User.class,i->i.getFieldFill()== FieldFill.DEFAULT);
+        List<User> users = userService.list(lambdaQueryWrapper);
+        users.forEach(System.out::println);
     }
 
     /**

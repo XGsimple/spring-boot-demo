@@ -35,6 +35,7 @@ public class User implements Serializable {
      * 用户名
      */
     //@TableField(value = "name")//字段名与数据库字段名不一致时采用该形式进行映射
+    //@TableField(condition = SqlCondition.LIKE)
     private String name;
 
     /**
