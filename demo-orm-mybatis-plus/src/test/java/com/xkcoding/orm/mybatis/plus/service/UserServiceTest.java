@@ -9,11 +9,13 @@ import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xkcoding.orm.mybatis.plus.SpringBootDemoOrmMybatisPlusApplicationTests;
 import com.xkcoding.orm.mybatis.plus.entity.User;
+import com.xkcoding.orm.mybatis.plus.mapper.UserMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.util.Lists;
 import org.junit.Assert;
@@ -38,6 +40,9 @@ import java.util.stream.Collectors;
 public class UserServiceTest extends SpringBootDemoOrmMybatisPlusApplicationTests {
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private UserMapper userMapper;
 
     /**
      * 测试Mybatis-Plus 新增
@@ -274,6 +279,29 @@ public class UserServiceTest extends SpringBootDemoOrmMybatisPlusApplicationTest
         lambdaQueryWrapper.select(User.class,i->i.getFieldFill()== FieldFill.DEFAULT);
         List<User> users = userService.list(lambdaQueryWrapper);
         users.forEach(System.out::println);
+    }
+
+    /**
+     * 自定义sql
+     */
+    @Test
+    public void wrapper7Test() {
+        User user = userMapper.myGetUserById(1L);
+        List<User> users = userMapper.mySelectAll();
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.select("id","name").eq("age",22);
+        List<User> usersByWrapper = userMapper.mySelectByMyWrapper(queryWrapper);
+
+        log.debug("【user】= {}", user);
+        log.debug("【users】= {}", users);
+        log.debug("【usersByWrapper】= {}", usersByWrapper);
+
+        //UPDATE orm_user SET email = 'update@user.com' WHERE (age = 14)
+        UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
+        User updateUser = new User();
+        updateUser.setEmail("update@user.com");
+        updateWrapper.eq("age",14);
+        userMapper.myUpdateByMyWrapper(updateWrapper,updateUser);
     }
 
     /**

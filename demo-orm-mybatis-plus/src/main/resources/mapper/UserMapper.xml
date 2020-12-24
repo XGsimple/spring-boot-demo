@@ -3,6 +3,15 @@
 <mapper namespace="com.xkcoding.orm.mybatis.plus.mapper.UserMapper">
 
   <select id="mySelectAll" resultType="com.xkcoding.orm.mybatis.plus.entity.User">
-        select * from user
+        select * from orm_user
   </select>
+
+  <select id="mySelectByMyWrapper" resultType="com.xkcoding.orm.mybatis.plus.entity.User">
+        SELECT ${ew.sqlSelect} FROM user ${ew.customSqlSegment}
+  </select>
+
+  <update id="myUpdateByMyWrapper">
+        UPDATE orm_user SET email = #{user.email} ${ew.customSqlSegment}
+  </update>
+
 </mapper>
