@@ -77,6 +77,7 @@ public class User implements Serializable {
     /**
      * 逻辑删除
      */
+    @TableLogic//逻辑删除
     @TableField(fill = FieldFill.INSERT)//插入数据时填充
     private Integer deleted;
 

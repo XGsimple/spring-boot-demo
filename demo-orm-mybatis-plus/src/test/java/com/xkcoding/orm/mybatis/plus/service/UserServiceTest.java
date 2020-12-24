@@ -5,9 +5,11 @@ import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.crypto.SecureUtil;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xkcoding.orm.mybatis.plus.SpringBootDemoOrmMybatisPlusApplicationTests;
 import com.xkcoding.orm.mybatis.plus.entity.User;
@@ -131,7 +133,6 @@ public class UserServiceTest extends SpringBootDemoOrmMybatisPlusApplicationTest
      */
     @Test
     public void testQueryByCondition() {
-        initData();
         QueryWrapper<User> wrapper = new QueryWrapper<>();
         wrapper.like("name", "Save1").or().eq("phone_number", "17300000001").orderByDesc("id");
         int count = userService.count(wrapper);
@@ -149,18 +150,23 @@ public class UserServiceTest extends SpringBootDemoOrmMybatisPlusApplicationTest
         testSaveList();
     }
 
+    //=============================================================================================================
+
     /**
      * 使用LambdaQueryWrapper
      * SELECT name,age FROM orm_user WHERE name LIKE 'user%' AND age < 40 OR age > 50
      */
     @Test
-    public void testLambdaQueryWrapper() {
-        //有多种方式获得 随便记住一种即可
-        LambdaQueryWrapper<User> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+    public void lambdaQueryWrapperTest() {
+        //有多种方式获得 随便记住一种即可;
+        //不建议直接 new 该实例，使用 Wrappers.lambdaQuery(entity)
+        LambdaQueryWrapper<User> lambdaQueryWrapper = Wrappers.<User>lambdaQuery();
+        //LambdaQueryWrapper<User> lambdaQueryWrapper = new LambdaQueryWrapper<>(user);
         //LambdaQueryWrapper<User> lambdaQueryWrapper = new QueryWrapper<User>().lambda();
-        //LambdaQueryWrapper<User> lambdaQueryWrapper = Wrappers.<User>lambdaQuery();
         //LambdaQueryChainWrapper<User> lambdaQueryWrapper = userService.lambdaQuery();
-        lambdaQueryWrapper.select(User::getName, User::getAge).likeRight(User::getName, "user").lt(User::getAge, 40).or().gt(User::getAge, 50);
+
+        //lambdaQueryWrapper.select(User::getName, User::getAge).likeRight(User::getName, "user").lt(User::getAge, 40).or().gt(User::getAge, 50);
+        lambdaQueryWrapper.likeRight(User::getName, "user").lt(User::getAge, 40).or().gt(User::getAge, 50);
         List<User> list = userService.list(lambdaQueryWrapper);
         log.debug("【list】= {}", list);
 
@@ -198,6 +204,53 @@ public class UserServiceTest extends SpringBootDemoOrmMybatisPlusApplicationTest
             executorService.execute(() -> userService.updateById(user));
         }
         TimeUnit.SECONDS.sleep(2);
+    }
+
+    /**
+     * 分页测试
+     */
+    @Test
+    public void pageTest() {
+        /**
+         * 构造参数：查询第一页，每页条数为5条
+         */
+        Page<User> userPage = new Page<>(1, 5);
+
+        //查询的条件用实体类接收，user什么都没设置则默认查询所有
+        User queryUser = new User();
+        queryUser.setVersion(1);
+
+        //TODO 如果属性不一致，需要做特殊处理
+        LambdaQueryWrapper<User> queryWrapper = Wrappers.<User>lambdaQuery(queryUser);
+
+        //查询
+        Page<User> page = userService.page(userPage, queryWrapper);
+
+        //转成json输出，需要引入hutool工具类依赖
+        String jsonString = JSONUtil.parse(page).toJSONString(1);
+        log.info("查询的结果 = {}", jsonString);
+    }
+
+    /**
+     * 逻辑删除
+     * 配置文件中：
+     * logic-delete-value: 1 # 逻辑已删除值(默认为 1)
+     * logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)
+     * 实体类的逻辑删除字段上添加注解    @TableLogic
+     */
+    @Test
+    public void logicDeleteTest() {
+        User user = new User();
+        user.setId(11L);
+        //查询的条件用实体类接收，user什么都没设置则默认查询所有
+        User queryUser = new User();
+        queryUser.setId(1L);
+
+        //TODO 如果属性不一致，需要做特殊处理
+        LambdaQueryWrapper<User> wrapper = Wrappers.<User>lambdaQuery(queryUser);
+
+        boolean remove = userService.remove(wrapper);
+        log.info("delete={}", remove);
     }
 
 }
