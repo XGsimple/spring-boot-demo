@@ -1,15 +1,19 @@
 package com.xkcoding.cache.redis.service.impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.google.common.collect.Maps;
 import com.xkcoding.cache.redis.entity.User;
+import com.xkcoding.cache.redis.service.RedisService;
 import com.xkcoding.cache.redis.service.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * <p>
@@ -36,6 +40,10 @@ public class UserServiceImpl implements UserService {
         DATABASES.put(3L, new User(3L, "user3"));
     }
 
+    @Autowired
+    RedisService redisService;
+
+    //==============================基于@Cache注解，自动管理缓存操作==============================
     /**
      * 保存或修改用户
      *
@@ -72,6 +80,43 @@ public class UserServiceImpl implements UserService {
     @CacheEvict(value = "user", key = "#id")
     @Override
     public void delete(Long id) {
+        DATABASES.remove(id);
+        log.info("删除用户【id】= {}", id);
+    }
+
+    //==============================基于redisTemplate，手动管理缓存操作==============================
+    /**
+     * 基于redisTemple
+     *
+     * @param user 用户对象
+     */
+    @Override
+    public User saveOrUpdateByRedisTemple(User user) {
+        DATABASES.put(user.getId(), user);
+        log.info("保存用户【user】= {}", user);
+        String redisKey = StrUtil.format("user::{}", user.getId());
+        redisService.set(redisKey, user);
+        return user;
+    }
+
+    @Override
+    public User getByRedisTemple(Long id) {
+        String redisKey = StrUtil.format("user::{}", id);
+        User user = (User) redisService.get(redisKey);
+        if (Objects.isNull(user)) {
+            // 我们假设从数据库读取
+            log.info("查询用户【id】= {}", id);
+            user = DATABASES.get(id);
+            //保存到redis中
+            redisService.set(redisKey, user);
+        }
+        return user;
+    }
+
+    @Override
+    public void deleteByRedisTemple(Long id) {
+        String redisKey = StrUtil.format("user::{}", id);
+        redisService.del(redisKey);
         DATABASES.remove(id);
         log.info("删除用户【id】= {}", id);
     }
