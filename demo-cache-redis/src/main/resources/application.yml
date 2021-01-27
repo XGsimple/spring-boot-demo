@@ -20,6 +20,11 @@ spring:
   cache:
     # 一般来说是不用配置的，Spring Cache 会根据依赖的包自行装配
     type: redis
+    redis:
+      time-to-live: 3600000 #过期时间
+      key-prefix: CACHE_ #缓存前缀
+      use-key-prefix: true #是否用前缀
+      cache-null-values: true #是否缓存控制
 logging:
   level:
     com.xkcoding: debug

@@ -41,6 +41,7 @@
     <module>demo-social</module>
     <module>demo-zookeeper</module>
     <module>demo-mq-rabbitmq</module>
+    <module>demo-mq-rabbitmq-basic</module>
     <module>demo-mq-rocketmq</module>
     <module>demo-mq-kafka</module>
     <module>demo-websocket</module>

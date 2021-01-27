@@ -75,6 +75,7 @@ public class RedisConfig  extends CachingConfigurerSupport {
 
     /**
      * 配置使用注解的时候缓存配置，默认是序列化反序列化的形式，加上此配置则为 json 形式
+     * CacheProperties 缓存配置属性类
      * @param redisConnectionFactory
      * @return
      */
