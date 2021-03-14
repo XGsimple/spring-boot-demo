@@ -1,5 +1,6 @@
 package com.xkcoding.upload.service.impl;
 
+import cn.hutool.core.io.FileUtil;
 import com.qiniu.common.QiniuException;
 import com.qiniu.http.Response;
 import com.qiniu.storage.UploadManager;

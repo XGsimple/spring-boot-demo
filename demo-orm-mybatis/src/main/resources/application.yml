@@ -28,5 +28,6 @@ mybatis:
   configuration:
     # 下划线转驼峰
     map-underscore-to-camel-case: true
+  #config-location: classpath:/mybatis/config/mybatis-config.xml
   mapper-locations: classpath:mappers/*.xml
   type-aliases-package: com.xkcoding.orm.mybatis.entity
