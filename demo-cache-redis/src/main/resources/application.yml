@@ -1,6 +1,6 @@
 spring:
   redis:
-    host: 47.101.165.21
+    host: 127.127.127.127
     port: 16379
     password: xx5320980.
     # 连接超时时间（记得添加单位，Duration）

@@ -13,7 +13,7 @@ public class RabbitUtils {
     public static ConnectionFactory connectionFactory = new ConnectionFactory();
 
     static {
-        connectionFactory.setHost("47.101.165.21");
+        connectionFactory.setHost("127.127.127.127");
         connectionFactory.setPort(5672);
         connectionFactory.setUsername("admin");
         connectionFactory.setPassword("123456");

@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:p6spy:mysql://47.101.165.21:3306/study?useUnicode=true&characterEncoding=UTF-8&useSSL=false&autoReconnect=true&failOverReadOnly=false&serverTimezone=Asia/Shanghai
+    url: jdbc:p6spy:mysql://127.127.127.127:3306/study?useUnicode=true&characterEncoding=UTF-8&useSSL=false&autoReconnect=true&failOverReadOnly=false&serverTimezone=Asia/Shanghai
     username: ycy
     password: ZKBWvZeE06RitMm3
     #driver-class-name: com.mysql.cj.jdbc.Driver
