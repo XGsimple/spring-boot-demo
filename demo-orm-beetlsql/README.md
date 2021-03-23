@@ -126,7 +126,7 @@ beetlsql:
   enabled: true
   sqlPath: /sql
   daoSuffix: Dao
-  basePackage: com.xkcoding.orm.beetlsql.dao
+  basePackage: mapper
   dbStyle: org.beetl.sql.core.db.MySqlStyle
   nameConversion: org.beetl.sql.core.UnderlinedNameConversion
 beet-beetlsql:

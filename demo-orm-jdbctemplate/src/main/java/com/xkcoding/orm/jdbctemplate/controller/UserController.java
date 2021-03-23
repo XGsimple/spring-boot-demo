@@ -13,7 +13,27 @@ import java.util.List;
  * <p>
  * User Controller
  * </p>
+ *springboot为我们提供了jdbctemplate, 作为一个轻量化的操作数据库的工具, 以下是详细介绍.
  *
+ * 1、有了数据源(com.zaxxer.hikari.HikariDataSource)，然后可以拿到数据库连接(java.sql.Connection)，有了连接，就可以使用连接和原生的 JDBC 语句来操作数据库
+ *
+ * 2、即使不使用第三方第数据库操作框架，如 MyBatis等，Spring 本身也对原生的JDBC 做了轻量级的封装，即 org.springframework.jdbc.core.JdbcTemplate。
+ *
+ * 3、数据库操作的所有 CRUD 方法都在 JdbcTemplate 中。
+ *
+ * 4、Spring Boot 不仅提供了默认的数据源，同时默认已经配置好了 JdbcTemplate 放在了容器中，程序员只需自己注入即可使用
+ *
+ * 5、JdbcTemplate  的自动配置原理是依赖 org.springframework.boot.autoconfigure.jdbc 包下的 org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration 类
+ *
+ * JdbcTemplate主要提供以下几类方法：
+ *
+ * execute方法：可以用于执行任何SQL语句，一般用于执行DDL语句；
+ *
+ * update方法及batchUpdate方法：update方法用于执行新增、修改、删除等语句；batchUpdate方法用于执行批处理相关语句；
+ *
+ * query方法及queryForXXX方法：用于执行查询相关语句；
+ *
+ * call方法：用于执行存储过程、函数相关语句。
  * @author yangkai.shen
  * @date Created in 2018-10-15 13:58
  */
