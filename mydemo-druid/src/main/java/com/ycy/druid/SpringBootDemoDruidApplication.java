@@ -7,10 +7,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @SpringBootApplication
 //启注解事务管理
 @EnableTransactionManagement
-public class DruidApplication {
+public class SpringBootDemoDruidApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(DruidApplication.class, args);
+        SpringApplication.run(SpringBootDemoDruidApplication.class, args);
     }
 
 }

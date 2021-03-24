@@ -24,18 +24,14 @@ public class LearnServiceImpl extends ServiceImpl<LearnResourceMapper, LearnReso
     @Autowired
     private LearnResourceMapper learnResourceMapper;
 
-    @Autowired
-    private LearnService learnService;
-
-
 
     @Override
     public void deleteBatch(Long[] ids) {
-        learnService.removeByIds(Arrays.asList(ids));
+        removeByIds(Arrays.asList(ids));
         LambdaQueryWrapper<User> lambdaQueryWrapper = new QueryWrapper<User>().lambda();
         lambdaQueryWrapper.in(User::getId, ids);
         learnResourceMapper.deleteBatchIds(Arrays.asList(ids));
-        learnService.removeByIds(Arrays.asList(ids));
+        removeByIds(Arrays.asList(ids));
     }
 
     @Override
@@ -43,7 +39,7 @@ public class LearnServiceImpl extends ServiceImpl<LearnResourceMapper, LearnReso
         LambdaQueryWrapper<LearnResource> lambdaQueryWrapper = Wrappers.<LearnResource>lambdaQuery();
         lambdaQueryWrapper.gt(LearnResource::getId, 0L);
         Page<LearnResource> resourceQueryPage = new Page<>(reqPage.getCurrent(), reqPage.getSize());
-        Page<LearnResource> resultPage = learnService.page(resourceQueryPage, lambdaQueryWrapper);
+        Page<LearnResource> resultPage = page(resourceQueryPage, lambdaQueryWrapper);
         return resultPage;
     }
 
