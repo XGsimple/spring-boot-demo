@@ -23,7 +23,6 @@ public class OrderSystem {
     public static void main(String[] args) throws IOException, TimeoutException, InterruptedException {
         Connection conn = RabbitUtils.getConnection();
         Channel channel = conn.createChannel();
-        channel.queueDeclare(RabbitConstant.QUEUE_SMS, false, false, false, null);
 
         ExecutorService pool = Executors.newFixedThreadPool(6);
         CountDownLatch countDownLatch = new CountDownLatch(20);
