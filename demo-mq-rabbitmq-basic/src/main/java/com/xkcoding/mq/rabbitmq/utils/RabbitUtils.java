@@ -10,7 +10,7 @@ import com.rabbitmq.client.ConnectionFactory;
  * @createTime 2021-01-24 18:23
  */
 public class RabbitUtils {
-    public static ConnectionFactory connectionFactory = new ConnectionFactory();
+    private static final ConnectionFactory connectionFactory = new ConnectionFactory();
 
     static {
         connectionFactory.setHost("127.127.127.127");

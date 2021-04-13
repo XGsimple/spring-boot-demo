@@ -59,7 +59,7 @@ public class RestTemplateTests {
 
     @Test
     public void testGet_product1() {
-        String url = "http://localhost:8081/product/get_product1";
+        String url = "http://localhost:8080/product/get_product1";
         String result = restTemplate.getForObject(url, String.class);
         System.out.println("get_product1返回结果：" + result);
         Assert.hasText(result, "get_product1返回结果为空");
@@ -96,7 +96,7 @@ public class RestTemplateTests {
     //url带参数的Get请求
     @Test
     public void testGet_product2() {
-        String url = "http://localhost:8081/product/get_product2?id={id}";
+        String url = "http://localhost:8080/product/get_product2?id={id}";
         ResponseEntity<Product> responseEntity = restTemplate.getForEntity(url, Product.class, 101);
         System.out.println(responseEntity);
         isTrue(responseEntity.getStatusCode().equals(HttpStatus.OK), "get_product2 请求不成功");
@@ -113,7 +113,7 @@ public class RestTemplateTests {
     //header中带有cookie的Get请求
     @Test
     public void testGet_product3() {
-        String url = "http://localhost:8081/product/get_product2?id={id}";
+        String url = "http://localhost:8080/product/get_product2?id={id}";
         Map<String, Object> uriVariables = new HashMap<>();
         uriVariables.put("id", 101);
         //请求参数
@@ -133,7 +133,7 @@ public class RestTemplateTests {
     //application/x-www-form-urlencoded
     @Test
     public void testPost_product1() {
-        String url = "http://localhost:8081/product/post_product1";
+        String url = "http://localhost:8080/product/post_product1";
         MultiValueMap<String, String> header = new LinkedMultiValueMap();
         header.add(HttpHeaders.CONTENT_TYPE, (MediaType.APPLICATION_FORM_URLENCODED_VALUE));
         Product product = new Product(201, "Macbook", BigDecimal.valueOf(10000));
@@ -156,7 +156,7 @@ public class RestTemplateTests {
     //发送 Content-Type 为 application/json 的 POST 请求：
     @Test
     public void testPost_product2() {
-        String url = "http://localhost:8081/product/post_product2";
+        String url = "http://localhost:8080/product/post_product2";
         MultiValueMap<String, String> header = new LinkedMultiValueMap();
         header.put(HttpHeaders.CONTENT_TYPE, Arrays.asList(MediaType.APPLICATION_JSON_VALUE));
         header.put(HttpHeaders.ACCEPT, Arrays.asList(MediaType.APPLICATION_JSON_VALUE));
@@ -168,13 +168,13 @@ public class RestTemplateTests {
 
     @Test
     public void testDelete() {
-        String url = "http://localhost:8081/product/delete/{id}";
+        String url = "http://localhost:8080/product/delete/{id}";
         restTemplate.delete(url, 101);
     }
 
     @Test
     public void testPut() {
-        String url = "http://localhost:8081/product/update";
+        String url = "http://localhost:8080/product/update";
         Map<String, ?> variables = new HashMap<>();
         MultiValueMap<String, String> header = new LinkedMultiValueMap();
         header.put(HttpHeaders.CONTENT_TYPE, Arrays.asList(MediaType.APPLICATION_FORM_URLENCODED_VALUE));
@@ -186,7 +186,7 @@ public class RestTemplateTests {
 
     @Test
     public void testUploadFile() {
-        String url = "http://localhost:8081/product/upload";
+        String url = "http://localhost:8080/product/upload";
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         Object file = new FileSystemResource(new File("/Users/One/Desktop/b.txt"));
         body.add("file", file);

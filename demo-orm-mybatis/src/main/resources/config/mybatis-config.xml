@@ -7,6 +7,6 @@
         <setting name="mapUnderscoreToCamelCase" value="true"/>
     </settings>
     <typeAliases>
-        <package name="com.yukong.chapter7.entity"/>
+        <package name="com.xkcoding.orm.mybatis.entity"/>
     </typeAliases>
 </configuration>
