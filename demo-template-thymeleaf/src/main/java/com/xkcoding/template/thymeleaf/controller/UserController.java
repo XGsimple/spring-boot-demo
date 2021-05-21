@@ -1,7 +1,10 @@
 package com.xkcoding.template.thymeleaf.controller;
 
+import com.xkcoding.template.thymeleaf.listener.LoginEvent;
 import com.xkcoding.template.thymeleaf.model.User;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,6 +25,9 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/user")
 @Slf4j
 public class UserController {
+    @Autowired
+    SimpleApplicationEventMulticaster mySimpleApplicationEventMulticaster;
+
     @PostMapping("/login")
     public ModelAndView login(User user, HttpServletRequest request) {
         ModelAndView mv = new ModelAndView();
@@ -30,6 +36,8 @@ public class UserController {
         mv.setViewName("redirect:/");
 
         request.getSession().setAttribute("user", user);
+
+        mySimpleApplicationEventMulticaster.multicastEvent(new LoginEvent(this));
         return mv;
     }
 
