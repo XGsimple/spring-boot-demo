@@ -20,6 +20,14 @@ public interface UserService {
     User saveOrUpdate(User user);
 
     /**
+     * 双写
+     *
+     * @param user
+     * @return
+     */
+    User doubleWtrite(User user);
+
+    /**
      * 获取用户
      *
      * @param id key值
@@ -33,7 +41,6 @@ public interface UserService {
      * @param id key值
      */
     void delete(Long id);
-
 
     /**
      * 保存或修改用户

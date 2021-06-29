@@ -35,6 +35,15 @@ public class UserServiceTest extends SpringBootDemoCacheRedisApplicationTests {
     }
 
     /**
+     * 双写，先删缓存，保存数据库后，在保存到缓存
+     */
+    @Test
+    public void doubleWriteTest() {
+        User user = new User(1L, "user1");
+        userService.doubleWtrite(user);
+    }
+
+    /**
      * 先存，再查询，查看日志验证缓存
      */
     @Test
@@ -94,7 +103,5 @@ public class UserServiceTest extends SpringBootDemoCacheRedisApplicationTests {
         // 删除，查看redis是否存在缓存数据
         userService.deleteByRedisTemple(1L);
     }
-
-
 
 }
