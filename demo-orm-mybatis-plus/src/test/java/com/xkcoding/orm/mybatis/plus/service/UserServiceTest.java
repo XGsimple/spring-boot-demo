@@ -18,8 +18,7 @@ import com.xkcoding.orm.mybatis.plus.entity.User;
 import com.xkcoding.orm.mybatis.plus.mapper.UserMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.util.Lists;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -27,6 +26,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * <p>
@@ -52,7 +53,7 @@ public class UserServiceTest extends SpringBootDemoOrmMybatisPlusApplicationTest
         String salt = IdUtil.fastSimpleUUID();
         User testSave3 = User.builder().name("testSave3").password(SecureUtil.md5("123456" + salt)).salt(salt).email("testSave3@xkcoding.com").phoneNumber("17300000003").status(1).lastLoginTime(new DateTime()).build();
         boolean save = userService.save(testSave3);
-        Assert.assertTrue(save);
+        assertThat(save).isTrue();
         log.debug("【测试id回显#testSave3.getId()】= {}", testSave3.getId());
     }
 
@@ -68,7 +69,7 @@ public class UserServiceTest extends SpringBootDemoOrmMybatisPlusApplicationTest
             userList.add(user);
         }
         boolean batch = userService.saveBatch(userList);
-        Assert.assertTrue(batch);
+        assertThat(batch).isTrue();
         List<Long> ids = userList.stream().map(User::getId).collect(Collectors.toList());
         log.debug("【userList#ids】= {}", ids);
     }
@@ -79,9 +80,9 @@ public class UserServiceTest extends SpringBootDemoOrmMybatisPlusApplicationTest
     @Test
     public void testDelete() {
         boolean remove = userService.removeById(1L);
-        Assert.assertTrue(remove);
+        assertThat(remove).isTrue();
         User byId = userService.getById(1L);
-        Assert.assertNull(byId);
+        assertThat(byId).isNull();
     }
 
     /**
@@ -90,12 +91,12 @@ public class UserServiceTest extends SpringBootDemoOrmMybatisPlusApplicationTest
     @Test
     public void testUpdate() {
         User user = userService.getById(1L);
-        Assert.assertNotNull(user);
+        assertThat(user).isNotNull();
         user.setName("MybatisPlus修改名字");
         boolean b = userService.updateById(user);
-        Assert.assertTrue(b);
+        assertThat(b).isTrue();
         User update = userService.getById(1L);
-        Assert.assertEquals("MybatisPlus修改名字", update.getName());
+        assertThat(update.getName()).isEqualTo("MybatisPlus修改名字");
         log.debug("【update】= {}", update);
     }
 
@@ -105,7 +106,7 @@ public class UserServiceTest extends SpringBootDemoOrmMybatisPlusApplicationTest
     @Test
     public void testQueryOne() {
         User user = userService.getById(1L);
-        Assert.assertNotNull(user);
+        assertThat(user).isNotNull();
         log.debug("【user】= {}", user);
     }
 
@@ -115,7 +116,7 @@ public class UserServiceTest extends SpringBootDemoOrmMybatisPlusApplicationTest
     @Test
     public void testQueryAll() {
         List<User> list = userService.list(new QueryWrapper<>());
-        Assert.assertTrue(CollUtil.isNotEmpty(list));
+        assertThat(CollUtil.isNotEmpty(list)).isTrue();
         log.debug("【list】= {}", list);
     }
 
@@ -129,8 +130,8 @@ public class UserServiceTest extends SpringBootDemoOrmMybatisPlusApplicationTest
         Page<User> userPage = new Page<>(1, 5);
         userPage.setDesc("id");
         IPage<User> page = userService.page(userPage, new QueryWrapper<>());
-        Assert.assertEquals(5, page.getSize());
-        Assert.assertEquals(count, page.getTotal());
+        assertThat(page.getSize()).isEqualTo(5);
+        assertThat(page.getTotal()).isEqualTo(count);
         log.debug("【page.getRecords()】= {}", page.getRecords());
     }
 
@@ -144,8 +145,8 @@ public class UserServiceTest extends SpringBootDemoOrmMybatisPlusApplicationTest
         int count = userService.count(wrapper);
         Page<User> userPage = new Page<>(1, 3);
         IPage<User> page = userService.page(userPage, wrapper);
-        Assert.assertEquals(3, page.getSize());
-        Assert.assertEquals(count, page.getTotal());
+        assertThat(page.getSize()).isEqualTo(3);
+        assertThat(page.getTotal()).isEqualTo(count);
         log.debug("【page.getRecords()】= {}", page.getRecords());
     }
 

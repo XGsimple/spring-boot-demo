@@ -1,11 +1,10 @@
 package com.xkcoding.temple;
 
-import com.alibaba.fastjson.TypeReference;
 import com.xkcoding.temple.bean.Product;
 import com.xkcoding.temple.bean.ResultMessage;
 import com.xkcoding.temple.config.RestTemplateConfig;
 import com.xkcoding.temple.interceptor.UserAgentInterceptor;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
@@ -56,8 +55,7 @@ public class RestTemplateTests {
         return clientHttpRequestFactory;
     }*/
 
-
-    @Test
+    @org.junit.jupiter.api.Test
     public void testGet_product1() {
         String url = "http://localhost:8080/product/get_product1";
         String result = restTemplate.getForObject(url, String.class);
@@ -72,8 +70,8 @@ public class RestTemplateTests {
         System.out.println("get_product1返回结果：" + responseEntity);
         Assert.isTrue(responseEntity.getStatusCode().equals(HttpStatus.OK), "get_product1响应不成功");
 
-//        MultiValueMap header = new LinkedMultiValueMap();
-//        header.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+        //        MultiValueMap header = new LinkedMultiValueMap();
+        //        header.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON_UTF8));
         headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
@@ -94,7 +92,7 @@ public class RestTemplateTests {
     }
 
     //url带参数的Get请求
-    @Test
+    @org.junit.jupiter.api.Test
     public void testGet_product2() {
         String url = "http://localhost:8080/product/get_product2?id={id}";
         ResponseEntity<Product> responseEntity = restTemplate.getForEntity(url, Product.class, 101);
@@ -109,9 +107,8 @@ public class RestTemplateTests {
         Assert.notNull(result.getId(), "get_product2  传递参数不成功");
     }
 
-
     //header中带有cookie的Get请求
-    @Test
+    @org.junit.jupiter.api.Test
     public void testGet_product3() {
         String url = "http://localhost:8080/product/get_product2?id={id}";
         Map<String, Object> uriVariables = new HashMap<>();
@@ -123,7 +120,7 @@ public class RestTemplateTests {
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         //===设置Cookie
         List<String> cookieList = new ArrayList<>();
-        String token= "xxxxxxxxx";
+        String token = "xxxxxxxxx";
         cookieList.add("token=" + token);
         headers.put(HttpHeaders.COOKIE, cookieList); //将cookie放入header
         HttpEntity<Object> request = new HttpEntity<>(headers);
@@ -131,7 +128,7 @@ public class RestTemplateTests {
     }
 
     //application/x-www-form-urlencoded
-    @Test
+    @org.junit.jupiter.api.Test
     public void testPost_product1() {
         String url = "http://localhost:8080/product/post_product1";
         MultiValueMap<String, String> header = new LinkedMultiValueMap();
@@ -154,7 +151,7 @@ public class RestTemplateTests {
     }
 
     //发送 Content-Type 为 application/json 的 POST 请求：
-    @Test
+    @org.junit.jupiter.api.Test
     public void testPost_product2() {
         String url = "http://localhost:8080/product/post_product2";
         MultiValueMap<String, String> header = new LinkedMultiValueMap();
@@ -166,13 +163,13 @@ public class RestTemplateTests {
         Assert.isTrue(exchangeResult.getStatusCode().equals(HttpStatus.OK), "post_product2 请求不成功");
     }
 
-    @Test
+    @org.junit.jupiter.api.Test
     public void testDelete() {
         String url = "http://localhost:8080/product/delete/{id}";
         restTemplate.delete(url, 101);
     }
 
-    @Test
+    @org.junit.jupiter.api.Test
     public void testPut() {
         String url = "http://localhost:8080/product/update";
         Map<String, ?> variables = new HashMap<>();
@@ -184,7 +181,7 @@ public class RestTemplateTests {
         restTemplate.put(url, request);
     }
 
-    @Test
+    @org.junit.jupiter.api.Test
     public void testUploadFile() {
         String url = "http://localhost:8080/product/upload";
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
@@ -199,11 +196,10 @@ public class RestTemplateTests {
         Assert.isTrue(responseEntity.getStatusCode().equals(HttpStatus.OK), "upload 请求不成功");
     }
 
-
     /**
      * 通用方式设置请求头
      */
-    @Test
+    @org.junit.jupiter.api.Test
     public void testGetHeader() {
         /**
          * RestTemplate设置使用请求头的拦截器
@@ -221,12 +217,12 @@ public class RestTemplateTests {
     /**
      * Post方式设置请求头
      */
-    @Test
+    @org.junit.jupiter.api.Test
     public void testPostHeader() {
         //1. 设置请求头参数
         HttpHeaders requestHeaders = new HttpHeaders();
-        requestHeaders.add(HttpHeaders.USER_AGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
-            "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36");
+        requestHeaders.add(HttpHeaders.USER_AGENT,
+                           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " + "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36");
         //2. 模拟表单参数 请求体携带参数
         MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
         requestBody.add("username", "zhangsan");
@@ -265,8 +261,7 @@ public class RestTemplateTests {
         Map map = new HashMap();
         map.put("password", "123456");
 
-        String result2 = restTemplate.postForObject("http://localhost:8080/testRestPost?password={password}", request,
-            String.class, map);
+        String result2 = restTemplate.postForObject("http://localhost:8080/testRestPost?password={password}", request, String.class, map);
 
         /**
          * postForLocation 这个API和前两个都不一样
@@ -277,7 +272,5 @@ public class RestTemplateTests {
         URI uri = restTemplate.postForLocation("http://localhost:8080/testRestPostLocation", request);
         System.out.println("postForLocation请求到的地址为：" + uri);
     }
-
-
 
 }
