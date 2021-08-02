@@ -1,7 +1,7 @@
 package com.xkcoding;
 
-import com.alibaba.fastjson.JSON;
 import com.xkcoding.component.User;
+import com.xkcoding.dao.UserDao;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,12 +9,21 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.mock.web.MockHttpSession;
+import org.springframework.context.annotation.Bean;
+import org.springframework.http.*;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+
+import java.time.Duration;
+import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,6 +36,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @MockitoSettings(strictness = Strictness.WARN)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class UserControllerRestTemplTest {
+    @MockBean
+    private UserDao userDao;
 
     @Autowired
     private TestRestTemplate restTemplate;
@@ -34,16 +45,28 @@ public class UserControllerRestTemplTest {
     @LocalServerPort
     private int port;
 
-    @Autowired
-    private MockHttpSession session;
-
     private String url;
 
     @BeforeEach
     public void setup() {
         url = String.format("http://localhost:%d", port);
-        User user = new User(1, "小明");
-        session.setAttribute("user", user); //拦截器那边会判断用户是否登录，所以这里注入一个用户
+    }
+
+    @TestConfiguration
+    static class TestRestTemplateAuthenticationConfiguration {
+
+        @Value("${spring.security.user.name:小明}")
+        private String userName;
+
+        @Value("${spring.security.user.password:123456}")
+        private String password;
+
+        @Bean
+        public RestTemplateBuilder restTemplateBuilder() {
+            //            return new RestTemplateBuilder().rootUri("http://localhost:8080/").setConnectTimeout(Duration.ofMillis(1000))
+            //                                            .setReadTimeout(Duration.ofMillis(1000)).basicAuthentication(userName, password);
+            return new RestTemplateBuilder().setConnectTimeout(Duration.ofMillis(1000)).setReadTimeout(Duration.ofMillis(1000));
+        }
     }
 
     /**
@@ -54,19 +77,13 @@ public class UserControllerRestTemplTest {
     @Test
     @DisplayName("新增用户测试用例")
     public void addLearn() throws Exception {
-        User user = new User("小明");
-        String json = JSON.toJSONString(user);
-        /**
-         * postForObject 返回值为响应的数据
-         * 参数1 要请求地址的url
-         * 参数2 通过LinkedMultiValueMap对象封装请求参数  模拟表单参数，封装在请求体中
-         * 参数3 响应数据的类型
-         */
-        LinkedMultiValueMap<String, String> request = new LinkedMultiValueMap<>();
-        request.set("user", json);
+        MultiValueMap<String, String> header = new LinkedMultiValueMap();
+        header.put(HttpHeaders.CONTENT_TYPE, Collections.singletonList(MediaType.APPLICATION_JSON_VALUE));
+        header.put(HttpHeaders.ACCEPT, Collections.singletonList(MediaType.APPLICATION_JSON_VALUE));
 
-        Integer result = restTemplate.postForObject(url + "/user/save", request, Integer.class);
-        assertThat(result).isEqualTo(1);
+        HttpEntity<User> request = new HttpEntity<>(new User("小明"), header);
+        ResponseEntity<String> responseEntity = restTemplate.postForEntity(url + "/user/save", request, String.class);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
 }

@@ -2,7 +2,7 @@ package com.xkcoding.controller;
 
 import com.xkcoding.component.R;
 import com.xkcoding.component.User;
-import com.xkcoding.service.UserService;
+import com.xkcoding.service.UserServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/user")
 public class UserController {
     @Autowired
-    private UserService userService;
+    private UserServiceImpl userService;
 
     /**
      * 获取用户
