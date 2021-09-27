@@ -142,4 +142,24 @@ public class UserServiceTest {
 
         assertThatThrownBy(() -> userService.saveUser(user)).isInstanceOf(SQLException.class).hasMessage("SQL is not valid");
     }
+
+    @Test
+    @DisplayName("保存用户-为无返回值的函数做测试桩")
+    public void testCreateUserOnDatabaseException3() throws Exception {
+
+        doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                Object mock = invocation.getMock();
+                return null;
+            }
+        }).when(userDao).insertUser(any(User.class));
+
+        User user = new User();
+        user.setId(1);
+        user.setName("Vikey");
+
+        assertThatThrownBy(() -> userService.createNewUser(user)).isInstanceOf(SQLException.class).hasMessage("SQL is not valid");
+    }
 }
