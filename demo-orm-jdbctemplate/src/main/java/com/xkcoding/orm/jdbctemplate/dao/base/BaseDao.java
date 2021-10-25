@@ -41,7 +41,7 @@ public class BaseDao<T, P> {
     @SuppressWarnings(value = "unchecked")
     public BaseDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        clazz = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+        clazz = (Class<T>)((ParameterizedType)getClass().getGenericSuperclass()).getActualTypeArguments()[0];
     }
 
     /**
@@ -66,7 +66,8 @@ public class BaseDao<T, P> {
         // 构造值
         Object[] values = filterField.stream().map(field -> ReflectUtil.getFieldValue(t, field)).toArray();
 
-        String sql = StrUtil.format("INSERT INTO {table} ({columns}) VALUES ({params})", Dict.create().set("table", table).set("columns", columns).set("params", params));
+        String sql = StrUtil.format("INSERT INTO {table} ({columns}) VALUES ({params})",
+                                    Dict.create().set("table", table).set("columns", columns).set("params", params));
         log.debug("【执行SQL】SQL：{}", sql);
         log.debug("【执行SQL】参数：{}", JSONUtil.toJsonStr(values));
         return jdbcTemplate.update(sql, values);
@@ -128,7 +129,7 @@ public class BaseDao<T, P> {
         RowMapper<T> rowMapper = new BeanPropertyRowMapper<>(clazz);
         log.debug("【执行SQL】SQL：{}", sql);
         log.debug("【执行SQL】参数：{}", JSONUtil.toJsonStr(pk));
-        return jdbcTemplate.queryForObject(sql, new Object[]{pk}, rowMapper);
+        return jdbcTemplate.queryForObject(sql, rowMapper, new Object[] {pk});
     }
 
     /**
@@ -148,7 +149,8 @@ public class BaseDao<T, P> {
         // 构造值
         Object[] values = filterField.stream().map(field -> ReflectUtil.getFieldValue(t, field)).toArray();
 
-        String sql = StrUtil.format("SELECT * FROM {table} where 1=1 {where}", Dict.create().set("table", tableName).set("where", StrUtil.isBlank(where) ? "" : where));
+        String sql = StrUtil.format("SELECT * FROM {table} where 1=1 {where}",
+                                    Dict.create().set("table", tableName).set("where", StrUtil.isBlank(where) ? "" : where));
         log.debug("【执行SQL】SQL：{}", sql);
         log.debug("【执行SQL】参数：{}", JSONUtil.toJsonStr(values));
         List<Map<String, Object>> maps = jdbcTemplate.queryForList(sql, values);
@@ -221,7 +223,10 @@ public class BaseDao<T, P> {
 
         // 过滤数据库中不存在的字段，以及自增列
         List<Field> filterField;
-        Stream<Field> fieldStream = CollUtil.toList(fields).stream().filter(field -> ObjectUtil.isNull(field.getAnnotation(Ignore.class)) || ObjectUtil.isNull(field.getAnnotation(Pk.class)));
+        Stream<Field> fieldStream = CollUtil.toList(fields)
+                                            .stream()
+                                            .filter(field -> ObjectUtil.isNull(field.getAnnotation(Ignore.class)) ||
+                                                             ObjectUtil.isNull(field.getAnnotation(Pk.class)));
 
         // 是否过滤字段值为null的字段
         if (ignoreNull) {

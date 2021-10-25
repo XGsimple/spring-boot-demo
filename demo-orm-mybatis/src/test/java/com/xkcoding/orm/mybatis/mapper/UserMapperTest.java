@@ -1,17 +1,17 @@
 package com.xkcoding.orm.mybatis.mapper;
 
-import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.crypto.SecureUtil;
 import com.xkcoding.orm.mybatis.SpringBootDemoOrmMybatisApplicationTests;
 import com.xkcoding.orm.mybatis.entity.User;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * <p>
@@ -32,7 +32,7 @@ public class UserMapperTest extends SpringBootDemoOrmMybatisApplicationTests {
     @Test
     public void selectAllUser() {
         List<User> userList = userMapper.selectAllUser();
-        Assert.assertTrue(CollUtil.isNotEmpty(userList));
+        assertThat(userList).isNotEmpty();
         log.debug("【userList】= {}", userList);
     }
 
@@ -42,7 +42,7 @@ public class UserMapperTest extends SpringBootDemoOrmMybatisApplicationTests {
     @Test
     public void selectUserById() {
         User user = userMapper.selectUserById(1L);
-        Assert.assertNotNull(user);
+        assertThat(user).isNotNull();
         log.debug("【user】= {}", user);
     }
 
@@ -52,9 +52,19 @@ public class UserMapperTest extends SpringBootDemoOrmMybatisApplicationTests {
     @Test
     public void saveUser() {
         String salt = IdUtil.fastSimpleUUID();
-        User user = User.builder().name("testSave3").password(SecureUtil.md5("123456" + salt)).salt(salt).email("testSave3@xkcoding.com").phoneNumber("17300000003").status(1).lastLoginTime(new DateTime()).createTime(new DateTime()).lastUpdateTime(new DateTime()).build();
+        User user = User.builder()
+                        .name("testSave3")
+                        .password(SecureUtil.md5("123456" + salt))
+                        .salt(salt)
+                        .email("testSave3@xkcoding.com")
+                        .phoneNumber("17300000003")
+                        .status(1)
+                        .lastLoginTime(new DateTime())
+                        .createTime(new DateTime())
+                        .lastUpdateTime(new DateTime())
+                        .build();
         int i = userMapper.saveUser(user);
-        Assert.assertEquals(1, i);
+        assertThat(i).isEqualTo(1);
     }
 
     /**
@@ -63,6 +73,6 @@ public class UserMapperTest extends SpringBootDemoOrmMybatisApplicationTests {
     @Test
     public void deleteById() {
         int i = userMapper.deleteById(1L);
-        Assert.assertEquals(1, i);
+        assertThat(i).isEqualTo(1);
     }
 }
