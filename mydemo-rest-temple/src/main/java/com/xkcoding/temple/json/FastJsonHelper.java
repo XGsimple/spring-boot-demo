@@ -37,6 +37,7 @@ public class FastJsonHelper {
                 return !exclusionKeys.contains(name);
             };
         }
+        //String jsonArrayStr = JSON.toJSONStringWithDateFormat(paramMap, "yyyy-MM-dd", SerializerFeature.WriteDateUseDateFormat);
         return JSON.toJSONString(paramMap, mapping, profilter, SerializerFeature.WriteBigDecimalAsPlain);
     }
 
