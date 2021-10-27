@@ -2,15 +2,15 @@ package com.xkcoding.temple;
 
 import com.xkcoding.temple.bean.Product;
 import com.xkcoding.temple.bean.ResultMessage;
-import com.xkcoding.temple.config.RestTemplateConfig;
+import com.xkcoding.temple.config.HttpClient4RestTemplateConfig;
 import com.xkcoding.temple.interceptor.UserAgentInterceptor;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.*;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -31,8 +31,8 @@ import static org.springframework.util.Assert.isTrue;
  * @Description RestTemplate 请求测试类
  * @date 2019/05/09
  */
-@RunWith(SpringRunner.class)
-@RestClientTest(value = {RestTemplateConfig.class})
+@ExtendWith(SpringExtension.class)
+@RestClientTest(value = {HttpClient4RestTemplateConfig.class})
 public class RestTemplateTests {
     @Autowired
     RestTemplate restTemplate;
@@ -55,7 +55,7 @@ public class RestTemplateTests {
         return clientHttpRequestFactory;
     }*/
 
-    @org.junit.jupiter.api.Test
+    @Test
     public void testGet_product1() {
         String url = "http://localhost:8080/product/get_product1";
         String result = restTemplate.getForObject(url, String.class);
@@ -131,8 +131,10 @@ public class RestTemplateTests {
     @org.junit.jupiter.api.Test
     public void testPost_product1() {
         String url = "http://localhost:8080/product/post_product1";
-        MultiValueMap<String, String> header = new LinkedMultiValueMap();
-        header.add(HttpHeaders.CONTENT_TYPE, (MediaType.APPLICATION_FORM_URLENCODED_VALUE));
+        HttpHeaders header = new HttpHeaders();
+        header.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        header.setAcceptCharset(Collections.singletonList(Charset.forName("UTF-8")));
+
         Product product = new Product(201, "Macbook", BigDecimal.valueOf(10000));
         String productStr = "id=" + product.getId() + "&name=" + product.getName() + "&price=" + product.getPrice();
         HttpEntity<String> request = new HttpEntity<>(productStr, header);

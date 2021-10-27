@@ -5,7 +5,6 @@ import com.xkcoding.dao.UserDao;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,6 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.*;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -32,9 +30,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @description
  * @createTime 2021/3/23 13:08
  */
-@ExtendWith(SpringExtension.class)
 @MockitoSettings(strictness = Strictness.WARN)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)//包含了 @ExtendWith(SpringExtension.class)
 public class UserControllerRestTemplTest {
     @MockBean
     private UserDao userDao;

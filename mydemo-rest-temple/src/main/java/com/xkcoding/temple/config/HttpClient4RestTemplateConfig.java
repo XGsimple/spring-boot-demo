@@ -7,7 +7,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
@@ -20,21 +19,18 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.JsonbHttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
-import javax.net.ssl.*;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -47,7 +43,7 @@ import java.util.List;
  * @createTime 2021/3/4 15:15
  */
 @Configuration
-public class RestTemplateConfig {
+public class HttpClient4RestTemplateConfig {
     /**
      * 整个连接池的并发
      */
@@ -92,9 +88,8 @@ public class RestTemplateConfig {
     }
 
     @Bean
-    public ClientHttpRequestFactory simpleClientHttpRequestFactory(HttpClient httpClient){
-        HttpComponentsClientHttpRequestFactory HttpsClientRequestFactory =
-            new HttpComponentsClientHttpRequestFactory();
+    public ClientHttpRequestFactory simpleClientHttpRequestFactory(HttpClient httpClient) {
+        HttpComponentsClientHttpRequestFactory HttpsClientRequestFactory = new HttpComponentsClientHttpRequestFactory();
         HttpsClientRequestFactory.setHttpClient(httpClient);
         HttpsClientRequestFactory.setConnectTimeout(15000); // 连接超时
         HttpsClientRequestFactory.setReadTimeout(5000); // 数据读取超时时间
@@ -111,7 +106,6 @@ public class RestTemplateConfig {
     public HttpClient httpClient() {
         return httpClientBuilder().build();
     }
-
 
     /**
      * 创建httpClient构建器
@@ -150,14 +144,11 @@ public class RestTemplateConfig {
             e.printStackTrace();
         }
 
-        SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext,
-            new String[]{"TLSv1", "TLSv1.1", "TLSv1.2"},
-            null,
-            NoopHostnameVerifier.INSTANCE);
+        SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext, new String[] {"TLSv1", "TLSv1.1", "TLSv1.2"}, null,
+                                                                        NoopHostnameVerifier.INSTANCE);
         builder.setSSLSocketFactory(csf);
         return builder;
     }
-
 
     class MyCustomSSLSocketFactory extends SSLSocketFactory {
 
@@ -180,14 +171,11 @@ public class RestTemplateConfig {
             return delegate.getSupportedCipherSuites();
         }
 
-
         @Override
-        public Socket createSocket(final Socket socket, final String host, final int port,
-                                   final boolean autoClose) throws IOException {
+        public Socket createSocket(final Socket socket, final String host, final int port, final boolean autoClose) throws IOException {
             final Socket underlyingSocket = delegate.createSocket(socket, host, port, autoClose);
             return overrideProtocol(underlyingSocket);
         }
-
 
         @Override
         public Socket createSocket(final String host, final int port) throws IOException {
@@ -196,9 +184,7 @@ public class RestTemplateConfig {
         }
 
         @Override
-        public Socket createSocket(final String host, final int port, final InetAddress localAddress,
-                                   final int localPort) throws
-            IOException {
+        public Socket createSocket(final String host, final int port, final InetAddress localAddress, final int localPort) throws IOException {
             final Socket underlyingSocket = delegate.createSocket(host, port, localAddress, localPort);
             return overrideProtocol(underlyingSocket);
         }
@@ -210,9 +196,7 @@ public class RestTemplateConfig {
         }
 
         @Override
-        public Socket createSocket(final InetAddress host, final int port, final InetAddress localAddress,
-                                   final int localPort) throws
-            IOException {
+        public Socket createSocket(final InetAddress host, final int port, final InetAddress localAddress, final int localPort) throws IOException {
             final Socket underlyingSocket = delegate.createSocket(host, port, localAddress, localPort);
             return overrideProtocol(underlyingSocket);
         }
@@ -222,10 +206,9 @@ public class RestTemplateConfig {
                 throw new RuntimeException("An instance of SSLSocket is expected");
             }
             //((SSLSocket) socket).setEnabledProtocols(new String[]{"TLSv1.2"});
-            ((SSLSocket) socket).setEnabledProtocols(new String[]{"TLSv1", "TLSv1.1", "TLSv1.2"});
+            ((SSLSocket)socket).setEnabledProtocols(new String[] {"TLSv1", "TLSv1.1", "TLSv1.2"});
             return socket;
         }
     }
-
 
 }

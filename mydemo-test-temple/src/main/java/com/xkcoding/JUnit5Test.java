@@ -3,10 +3,7 @@ package com.xkcoding;
 import com.xkcoding.component.Person;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvFileSource;
-import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.*;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InOrder;
@@ -17,10 +14,13 @@ import org.mockito.stubbing.Answer;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.data.Percentage.withPercentage;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.params.provider.EnumSource.Mode.EXCLUDE;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.BDDMockito.given;
@@ -31,9 +31,30 @@ import static org.mockito.Mockito.*;
  * @date 2021/6/9 10:16
  */
 @MockitoSettings(strictness = Strictness.WARN)
-public class MockitoMethodTest {
+public class JUnit5Test {
     @Captor
     private ArgumentCaptor<List<String>> captor;
+
+    //注意 @BeforeAll 和 @AfterAll 注解只能修饰静态方法
+    @BeforeAll
+    public static void init() {
+        System.out.println("初始化数据");
+    }
+
+    @AfterAll
+    public static void cleanup() {
+        System.out.println("清理数据");
+    }
+
+    @BeforeEach
+    public void tearup() {
+        System.out.println("当前测试方法开始");
+    }
+
+    @AfterEach
+    public void tearDown() {
+        System.out.println("当前测试方法结束");
+    }
 
     //实例化虚拟对象
     @Test
@@ -226,12 +247,13 @@ public class MockitoMethodTest {
     }
 
     //多次调用同一个测试用例
-    @RepeatedTest(10)
-    @DisplayName("重复测试")
+    @DisplayName("自定义名称重复测试")
+    @RepeatedTest(value = 3, name = "{displayName} 第 {currentRepetition} 次")
     public void testRepeated() {
-        //...
+        System.out.println("执行测试");
     }
 
+    //嵌套
     @Nested
     @DisplayName("AssertJ测试")
     static class AssertJTest {
@@ -297,7 +319,7 @@ public class MockitoMethodTest {
             Person p2 = new Person("William", 34);
 
             assertThat(p1).isNotSameAs(p2);
-            assertThat(p1).isNotEqualTo(p2); // 如果用isEqualTo判断，则必须要重写equals方法
+            assertThat(p1).isEqualTo(p2); // 如果用isEqualTo判断，则必须要重写equals方法
 
             // extracting method reference
             assertThat(p1).extracting(Person::getName, Person::getAge).containsExactly("William", 34);
@@ -520,6 +542,13 @@ public class MockitoMethodTest {
             System.out.println("name:" + name + ",age:" + age);
             Assertions.assertNotNull(name);
             Assertions.assertTrue(age > 0);
+        }
+
+        @ParameterizedTest
+        @EnumSource(value = TimeUnit.class, mode = EXCLUDE, names = {"DAYS", "HOURS"})
+        @DisplayName("参数化测试-枚举")
+        void testWithEnumSourceExclude(TimeUnit timeUnit) {
+            assertFalse(EnumSet.of(TimeUnit.DAYS, TimeUnit.HOURS).contains(timeUnit));
         }
     }
 
