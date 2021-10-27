@@ -5,7 +5,6 @@ import com.xkcoding.dao.UserDao;
 import com.xkcoding.service.UserServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -14,7 +13,6 @@ import org.mockito.quality.Strictness;
 import org.mockito.stubbing.Answer;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.sql.SQLException;
 
@@ -28,7 +26,6 @@ import static org.mockito.Mockito.*;
  * @date 2021/6/8 20:20
  */
 
-@ExtendWith(SpringExtension.class)
 @MockitoSettings(strictness = Strictness.WARN)
 @SpringBootTest
 public class UserServiceTest {
