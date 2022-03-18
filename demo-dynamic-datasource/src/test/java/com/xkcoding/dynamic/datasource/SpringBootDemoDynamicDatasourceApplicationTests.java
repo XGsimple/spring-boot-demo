@@ -1,11 +1,13 @@
 package com.xkcoding.dynamic.datasource;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(SpringRunner.class)
+@Slf4j
+@ExtendWith(SpringExtension.class) //表示该测试用例是运用junit5进行测试spring，也可以换成其他测试框架
 @SpringBootTest
 public class SpringBootDemoDynamicDatasourceApplicationTests {
 
