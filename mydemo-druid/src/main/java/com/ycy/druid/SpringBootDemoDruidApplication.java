@@ -5,7 +5,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @SpringBootApplication
-//启注解事务管理
 @EnableTransactionManagement
 public class SpringBootDemoDruidApplication {
 
