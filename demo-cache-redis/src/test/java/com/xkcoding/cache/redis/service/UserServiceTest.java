@@ -3,7 +3,7 @@ package com.xkcoding.cache.redis.service;
 import com.xkcoding.cache.redis.SpringBootDemoCacheRedisApplicationTests;
 import com.xkcoding.cache.redis.entity.User;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**

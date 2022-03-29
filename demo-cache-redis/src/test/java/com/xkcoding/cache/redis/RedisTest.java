@@ -2,7 +2,7 @@ package com.xkcoding.cache.redis;
 
 import com.xkcoding.cache.redis.entity.User;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -46,7 +46,7 @@ public class RedisTest extends SpringBootDemoCacheRedisApplicationTests {
         String key = "xkcoding:user:1";
         redisCacheTemplate.opsForValue().set(key, new User(1L, "user1"));
         // 对应 String（字符串）
-        User user = (User) redisCacheTemplate.opsForValue().get(key);
+        User user = (User)redisCacheTemplate.opsForValue().get(key);
         log.debug("【user】= {}", user);
     }
 }
