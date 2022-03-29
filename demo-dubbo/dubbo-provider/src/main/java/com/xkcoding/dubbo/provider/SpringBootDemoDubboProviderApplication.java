@@ -1,6 +1,6 @@
 package com.xkcoding.dubbo.provider;
 
-import com.alibaba.dubbo.spring.boot.annotation.EnableDubboConfiguration;
+import org.apache.dubbo.config.spring.context.annotation.EnableDubbo;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -12,7 +12,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @author yangkai.shen
  * @date Created in 2018-12-25 16:49
  */
-@EnableDubboConfiguration
+@EnableDubbo
 @SpringBootApplication
 public class SpringBootDemoDubboProviderApplication {
 

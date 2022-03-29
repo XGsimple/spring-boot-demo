@@ -1,8 +1,8 @@
 package com.xkcoding.dubbo.provider.service;
 
-import com.alibaba.dubbo.config.annotation.Service;
 import com.xkcoding.dubbo.common.service.HelloService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.stereotype.Component;
 
 /**
@@ -13,9 +13,9 @@ import org.springframework.stereotype.Component;
  * @author yangkai.shen
  * @date Created in 2018-12-25 16:58
  */
-@Service
-@Component
 @Slf4j
+@Component
+@DubboService
 public class HelloServiceImpl implements HelloService {
     /**
      * 问好

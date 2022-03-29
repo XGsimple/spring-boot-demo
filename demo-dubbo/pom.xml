@@ -5,14 +5,14 @@
 
     <artifactId>demo-dubbo</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-  <modules>
-    <module>dubbo-common</module>
-    <module>dubbo-provider</module>
-    <module>dubbo-consumer</module>
-  </modules>
+    <modules>
+        <module>dubbo-common</module>
+        <module>dubbo-provider</module>
+        <module>dubbo-consumer</module>
+    </modules>
     <packaging>pom</packaging>
 
-  <name>demo-dubbo</name>
+    <name>demo-dubbo</name>
     <description>Demo project for Spring Boot</description>
 
     <parent>
@@ -25,8 +25,34 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
-        <dubbo.starter.version>2.0.0</dubbo.starter.version>
-        <zkclient.version>0.10</zkclient.version>
+        <dubbo.version>3.0.2.1</dubbo.version>
+        <spring.boot.version>2.4.1</spring.boot.version>
     </properties>
 
+    <dependencyManagement>
+        <dependencies>
+            <!-- 统一jar版本管理，避免使用 spring-boot-parent -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring.boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.dubbo</groupId>
+                <artifactId>dubbo-bom</artifactId>
+                <version>${dubbo.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!--dubbo 和  springboot 整合的包-->
+            <dependency>
+                <groupId>org.apache.dubbo</groupId>
+                <artifactId>dubbo-spring-boot-starter</artifactId>
+                <version>${dubbo.version}</version>
+            </dependency>
+        </dependencies>
+
+    </dependencyManagement>
 </project>
