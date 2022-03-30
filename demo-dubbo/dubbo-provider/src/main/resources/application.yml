@@ -3,8 +3,13 @@ server:
     servlet:
         context-path: /demo
 
+spring:
+    application:
+        name: spring-boot-demo-dubbo-provider
+
 dubbo:
     application:
+        #可以不填，默认是spring.application.name
         name: spring-boot-demo-dubbo-provider
     registry:
         address: zookeeper://47.101.165.21:2181
@@ -15,4 +20,3 @@ dubbo:
     # 扫描 @DubboService 注解
     scan:
         base-packages: com.xkcoding.dubbo.provider.service
-

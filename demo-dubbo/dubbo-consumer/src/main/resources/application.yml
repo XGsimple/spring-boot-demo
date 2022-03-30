@@ -3,8 +3,13 @@ server:
     servlet:
         context-path: /demo
 
+spring:
+    application:
+        name: spring-boot-demo-dubbo-consumer
+
 dubbo:
     application:
+        #可以不填，默认是spring.application.name
         name: spring-boot-demo-dubbo-consumer
     registry:
         address: zookeeper://47.101.165.21:2181
