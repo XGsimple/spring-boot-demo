@@ -51,7 +51,7 @@ public class RedisLock implements IRedisLockService {
 
     @Override
     public boolean tryLock(String lock, String val, int second) {
-        List<String> keys = Collections.singletonList(wrapLockKeyWithTenantid(lock));
+        List<String> keys = Collections.singletonList(generateRedisKey(lock));
         boolean locked = false;
         int tryCount = 5;
         //重试
@@ -70,11 +70,14 @@ public class RedisLock implements IRedisLockService {
 
     @Override
     public void unlock(String lock, String val) {
-        List<String> keys = Collections.singletonList(wrapLockKeyWithTenantid(lock));
+        List<String> keys = Collections.singletonList(generateRedisKey(lock));
         redisTemplate.execute(unLockRedisScript, argsSerializer, resultSerializer, keys, val);
     }
 
-    public String wrapLockKeyWithTenantid(String lock) {
+    /**
+     * 生产redis的key
+     */
+    public String generateRedisKey(String lock) {
         log.debug("#####redisLockKey:{}#####", lock);
         return lock;
     }

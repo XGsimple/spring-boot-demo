@@ -47,7 +47,7 @@ public class BaseDao<T, P> {
     /**
      * 通用插入，自增列需要添加 {@link Pk} 注解
      *
-     * @param t          对象
+     * @param t 对象
      * @param ignoreNull 是否忽略 null 值
      * @return 操作的行数
      */
@@ -66,8 +66,8 @@ public class BaseDao<T, P> {
         // 构造值
         Object[] values = filterField.stream().map(field -> ReflectUtil.getFieldValue(t, field)).toArray();
 
-        String sql = StrUtil.format("INSERT INTO {table} ({columns}) VALUES ({params})",
-                                    Dict.create().set("table", table).set("columns", columns).set("params", params));
+        String sql = StrUtil
+            .format("INSERT INTO {table} ({columns}) VALUES ({params})", Dict.create().set("table", table).set("columns", columns).set("params", params));
         log.debug("【执行SQL】SQL：{}", sql);
         log.debug("【执行SQL】参数：{}", JSONUtil.toJsonStr(values));
         return jdbcTemplate.update(sql, values);
@@ -90,8 +90,8 @@ public class BaseDao<T, P> {
     /**
      * 通用根据主键更新，自增列需要添加 {@link Pk} 注解
      *
-     * @param t          对象
-     * @param pk         主键
+     * @param t 对象
+     * @param pk 主键
      * @param ignoreNull 是否忽略 null 值
      * @return 操作的行数
      */
@@ -149,8 +149,8 @@ public class BaseDao<T, P> {
         // 构造值
         Object[] values = filterField.stream().map(field -> ReflectUtil.getFieldValue(t, field)).toArray();
 
-        String sql = StrUtil.format("SELECT * FROM {table} where 1=1 {where}",
-                                    Dict.create().set("table", tableName).set("where", StrUtil.isBlank(where) ? "" : where));
+        String sql = StrUtil
+            .format("SELECT * FROM {table} where 1=1 {where}", Dict.create().set("table", tableName).set("where", StrUtil.isBlank(where) ? "" : where));
         log.debug("【执行SQL】SQL：{}", sql);
         log.debug("【执行SQL】参数：{}", JSONUtil.toJsonStr(values));
         List<Map<String, Object>> maps = jdbcTemplate.queryForList(sql, values);
@@ -213,7 +213,7 @@ public class BaseDao<T, P> {
     /**
      * 获取字段列表 {@code 过滤数据库中不存在的字段，以及自增列}
      *
-     * @param t          对象
+     * @param t 对象
      * @param ignoreNull 是否忽略空值
      * @return 字段列表
      */
@@ -223,10 +223,8 @@ public class BaseDao<T, P> {
 
         // 过滤数据库中不存在的字段，以及自增列
         List<Field> filterField;
-        Stream<Field> fieldStream = CollUtil.toList(fields)
-                                            .stream()
-                                            .filter(field -> ObjectUtil.isNull(field.getAnnotation(Ignore.class)) ||
-                                                             ObjectUtil.isNull(field.getAnnotation(Pk.class)));
+        Stream<Field> fieldStream = CollUtil.toList(fields).stream().filter(
+            field -> ObjectUtil.isNull(field.getAnnotation(Ignore.class)) || ObjectUtil.isNull(field.getAnnotation(Pk.class)));
 
         // 是否过滤字段值为null的字段
         if (ignoreNull) {
