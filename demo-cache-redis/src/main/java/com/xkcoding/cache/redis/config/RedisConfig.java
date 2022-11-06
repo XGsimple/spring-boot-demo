@@ -69,11 +69,12 @@ public class RedisConfig extends CachingConfigurerSupport {
         //使用fastjson序列化
         //FastJsonRedisSerializer serializer = new FastJsonRedisSerializer(Object.class);
         RedisSerializer<Object> serializer = redisSerializer();
+        RedisSerializer<String> strSerializer = RedisSerializer.string();
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory);
-        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setKeySerializer(strSerializer);
         redisTemplate.setValueSerializer(serializer);
-        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
+        redisTemplate.setHashKeySerializer(strSerializer);
         redisTemplate.setHashValueSerializer(serializer);
         redisTemplate.afterPropertiesSet();
         return redisTemplate;
@@ -98,9 +99,12 @@ public class RedisConfig extends CachingConfigurerSupport {
     public RedisCacheManager redisCacheManager(RedisConnectionFactory redisConnectionFactory) {
         RedisCacheWriter redisCacheWriter = RedisCacheWriter.nonLockingRedisCacheWriter(redisConnectionFactory);
         //设置Redis缓存有效期为1天
-        RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig().serializeKeysWith(
-            RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer())).serializeValuesWith(
-            RedisSerializationContext.SerializationPair.fromSerializer(redisSerializer())).entryTtl(Duration.ofDays(1));
+        RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
+                                                                                 .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(
+                                                                                     new StringRedisSerializer()))
+                                                                                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(
+                                                                                     redisSerializer()))
+                                                                                 .entryTtl(Duration.ofDays(1));
         return new RedisCacheManager(redisCacheWriter, redisCacheConfiguration);
     }
 
