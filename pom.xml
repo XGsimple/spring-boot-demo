@@ -94,6 +94,7 @@
         <user.agent.version>1.20</user.agent.version>
         <fast.json.version>1.2.70</fast.json.version>
         <okhttp.version>4.7.2</okhttp.version>
+        <easy-random.version>5.0.0</easy-random.version>
     </properties>
 
     <repositories>
@@ -151,6 +152,30 @@
                 <groupId>com.squareup.okhttp3</groupId>
                 <artifactId>okhttp</artifactId>
                 <version>${okhttp.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jeasy</groupId>
+                <artifactId>easy-random-core</artifactId>
+                <version>4.3.0</version>
+                <exclusions>
+                    <!-- 跟 SpringAOP 引入的 objenesis 有冲突，要排除 -->
+                    <exclusion>
+                        <groupId>org.objenesis</groupId>
+                        <artifactId>objenesis</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <!-- 支持根据参数校验逻辑生成对象字段 -->
+            <dependency>
+                <groupId>org.jeasy</groupId>
+                <artifactId>easy-random-bean-validation</artifactId>
+                <version>4.3.0</version>
+            </dependency>
+            <!--            单元测试生成测试字符串的神器-->
+            <dependency>
+                <groupId>com.github.javafaker</groupId>
+                <artifactId>javafaker</artifactId>
+                <version>1.0.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
