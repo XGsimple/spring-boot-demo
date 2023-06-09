@@ -4,7 +4,10 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
+import com.google.common.hash.BloomFilter;
 import com.google.common.hash.Funnel;
+import com.google.common.hash.Funnels;
+import com.xkcoding.bf.constant.Constant;
 import com.xkcoding.bf.helper.BloomFilterHelper;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
@@ -37,31 +40,31 @@ import java.time.Duration;
 @EnableCaching
 public class RedisConfig extends CachingConfigurerSupport {
 
-//    /**
-//     * 默认情况下的模板只能支持RedisTemplate<String, String>，也就是只能存入字符串，因此支持序列化
-//     */
-//    @Bean
-//    public RedisTemplate<String, Serializable> redisCacheTemplate(LettuceConnectionFactory redisConnectionFactory) {
-//        RedisTemplate<String, Serializable> template = new RedisTemplate<>();
-//        template.setKeySerializer(new StringRedisSerializer());
-//        template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
-//        template.setConnectionFactory(redisConnectionFactory);
-//        return template;
-//    }
-//
-//    /**
-//     * 配置使用注解的时候缓存配置，默认是序列化反序列化的形式，加上此配置则为 json 形式
-//     */
-//    @Bean
-//    public CacheManager cacheManager(RedisConnectionFactory factory) {
-//        // 配置序列化
-//        RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig();
-//        RedisCacheConfiguration redisCacheConfiguration = config
-//            .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
-//            .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()));
-//
-//        return RedisCacheManager.builder(factory).cacheDefaults(redisCacheConfiguration).build();
-//    }
+    //    /**
+    //     * 默认情况下的模板只能支持RedisTemplate<String, String>，也就是只能存入字符串，因此支持序列化
+    //     */
+    //    @Bean
+    //    public RedisTemplate<String, Serializable> redisCacheTemplate(LettuceConnectionFactory redisConnectionFactory) {
+    //        RedisTemplate<String, Serializable> template = new RedisTemplate<>();
+    //        template.setKeySerializer(new StringRedisSerializer());
+    //        template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+    //        template.setConnectionFactory(redisConnectionFactory);
+    //        return template;
+    //    }
+    //
+    //    /**
+    //     * 配置使用注解的时候缓存配置，默认是序列化反序列化的形式，加上此配置则为 json 形式
+    //     */
+    //    @Bean
+    //    public CacheManager cacheManager(RedisConnectionFactory factory) {
+    //        // 配置序列化
+    //        RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig();
+    //        RedisCacheConfiguration redisCacheConfiguration = config
+    //            .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
+    //            .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()));
+    //
+    //        return RedisCacheManager.builder(factory).cacheDefaults(redisCacheConfiguration).build();
+    //    }
 
     @Bean
     public RedisTemplate<String, Object> redisCacheTemplate(RedisConnectionFactory redisConnectionFactory) {
@@ -79,6 +82,7 @@ public class RedisConfig extends CachingConfigurerSupport {
     /**
      * 配置使用注解的时候缓存配置，默认是序列化反序列化的形式，加上此配置则为 json 形式
      * CacheProperties 缓存配置属性类
+     *
      * @param redisConnectionFactory
      * @return
      */
@@ -87,9 +91,11 @@ public class RedisConfig extends CachingConfigurerSupport {
         RedisCacheWriter redisCacheWriter = RedisCacheWriter.nonLockingRedisCacheWriter(redisConnectionFactory);
         //设置Redis缓存有效期为1天
         RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
-            .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
-            .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(redisSerializer()))
-            .entryTtl(Duration.ofDays(1));
+                                                                                 .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(
+                                                                                     new StringRedisSerializer()))
+                                                                                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(
+                                                                                     redisSerializer()))
+                                                                                 .entryTtl(Duration.ofDays(1));
         return new RedisCacheManager(redisCacheWriter, redisCacheConfiguration);
     }
 
@@ -104,9 +110,23 @@ public class RedisConfig extends CachingConfigurerSupport {
         return serializer;
     }
 
-    //初始化布隆过滤器，放入到spring容器里面
+    /**
+     * 初始化自定义的布隆过滤器，放入到spring容器里面
+     *
+     * @return
+     */
     @Bean
     public BloomFilterHelper<String> initBloomFilterHelper() {
-        return new BloomFilterHelper<>((Funnel<String>) (from, into) -> into.putString(from, Charsets.UTF_8).putString(from, Charsets.UTF_8), 1000000, 0.01);
+        return new BloomFilterHelper<>((Funnel<String>)(from, into) -> into.putString(from, Charsets.UTF_8), Constant.EXPECTED_INSERTIONS, Constant.FPP);
+    }
+
+    /**
+     * 基于Guava实现的BloomFilter
+     *
+     * @return
+     */
+    @Bean
+    public BloomFilter<CharSequence> bloomFilterStr() {
+        return BloomFilter.create(Funnels.stringFunnel(Charsets.UTF_8), Constant.EXPECTED_INSERTIONS, Constant.FPP);
     }
 }

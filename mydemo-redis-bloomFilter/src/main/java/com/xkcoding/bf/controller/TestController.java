@@ -23,24 +23,19 @@ public class TestController {
     @ResponseBody
     @RequestMapping("/add")
     public String addBloomFilter(@RequestParam("orderNum") String orderNum) {
-
-
         try {
-            redisBloomFilter.addByBloomFilter(bloomFilterHelper,"bloom",orderNum);
+            redisBloomFilter.addByBloomFilter(bloomFilterHelper, "bloom", orderNum);
         } catch (Exception e) {
             e.printStackTrace();
             return "添加失败";
         }
-
         return "添加成功";
     }
 
     @ResponseBody
     @RequestMapping("/check")
-    public boolean checkBloomFilter(@RequestParam ("orderNum") String orderNum) {
-
+    public boolean checkBloomFilter(@RequestParam("orderNum") String orderNum) {
         boolean b = redisBloomFilter.includeByBloomFilter(bloomFilterHelper, "bloom", orderNum);
-
         return b;
     }
 }

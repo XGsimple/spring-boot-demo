@@ -1,6 +1,7 @@
 package com.xkcoding.bf.helper;
 
 import com.google.common.base.Preconditions;
+import com.google.common.hash.BloomFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,23 @@ import org.springframework.stereotype.Service;
 public class RedisBloomFilter {
     @Autowired
     private RedisTemplate redisTemplate;
+
+    @Autowired
+    private BloomFilter<CharSequence> bloomFilterStr;
+
+    /**
+     * 根据给定的Guava布隆过滤器添加值
+     */
+    public void addByGuavaBloomFilter(String value) {
+        bloomFilterStr.put(value);
+    }
+
+    /**
+     * 根据给定的Guava布隆过滤器判断值是否存在
+     */
+    public boolean includeByGuavaBloomFilter(String value) {
+        return bloomFilterStr.mightContain(value);
+    }
 
     /**
      * 根据给定的布隆过滤器添加值
@@ -39,7 +57,6 @@ public class RedisBloomFilter {
                 return false;
             }
         }
-
         return true;
     }
 
