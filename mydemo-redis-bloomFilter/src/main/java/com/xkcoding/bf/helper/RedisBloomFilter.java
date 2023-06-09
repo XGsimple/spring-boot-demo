@@ -84,6 +84,7 @@ public class RedisBloomFilter {
                 theList.forEach(v -> {
                     int[] offset = bloomFilterHelper.murmurHashOffset(v);
                     for (int i : offset) {
+                        //基于原生connection操作，如果使用  redisTemplate.opsForValue().setBit(key, i, true);没用用
                         connection.setBit(rawKey, i, true);
                     }
                 });
