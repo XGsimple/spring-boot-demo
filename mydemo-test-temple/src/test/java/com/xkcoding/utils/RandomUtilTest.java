@@ -5,6 +5,7 @@ import com.github.javafaker.Faker;
 import com.github.javafaker.University;
 import com.xkcoding.component.User;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -19,24 +20,28 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class RandomUtilTest {
 
     @Test
+    @DisplayName("测试easyRandom——根据给定的类型生成一个随机的对象")
     void testNextObject() {
         User person = RandomUtil.nextObject(User.class);
         assertEquals("result", RandomUtil.nextObject(String.class));
     }
 
     @Test
+    @DisplayName("测试easyRandom——根据给定的类型和大小生成一个随机对象的列表")
     void testNextList() {
         assertEquals(Arrays.asList("value"), RandomUtil.nextList(String.class, 0));
         assertEquals(Collections.emptyList(), RandomUtil.nextList(String.class, 0));
     }
 
     @Test
+    @DisplayName("测试easyRandom——根据给定的类型和大小生成一个随机对象的集合")
     void testNextSet() {
         assertEquals(new HashSet<>(Arrays.asList("value")), RandomUtil.nextSet(String.class, 0));
         assertEquals(Collections.emptySet(), RandomUtil.nextSet(String.class, 0));
     }
 
     @Test
+    @DisplayName("测试easyRandom—— 根据给定的类型和大小生成一个随机对象流")
     void testObjects() {
         // Setup
         // Run the test
@@ -46,6 +51,7 @@ class RandomUtilTest {
     }
 
     @Test
+    @DisplayName("测试JavaFaker")
     void testJavaFaker() {
         Faker faker = new Faker(new Locale("zh-CN"));
         //姓名
