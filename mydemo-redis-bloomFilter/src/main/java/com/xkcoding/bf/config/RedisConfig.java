@@ -67,7 +67,7 @@ public class RedisConfig extends CachingConfigurerSupport {
     //    }
 
     @Bean
-    public RedisTemplate<String, Object> redisCacheTemplate(RedisConnectionFactory redisConnectionFactory) {
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
         RedisSerializer<Object> serializer = redisSerializer();
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory);
@@ -111,17 +111,17 @@ public class RedisConfig extends CachingConfigurerSupport {
     }
 
     /**
-     * 初始化自定义的布隆过滤器，放入到spring容器里面
+     * 初始化自定义的布隆过滤器，放入到spring容器里面-基于redis的BitMap实现
      *
      * @return
      */
     @Bean
-    public BloomFilterHelper<String> initBloomFilterHelper() {
+    public BloomFilterHelper<String> bloomFilterHelper() {
         return new BloomFilterHelper<>((Funnel<String>)(from, into) -> into.putString(from, Charsets.UTF_8), Constant.EXPECTED_INSERTIONS, Constant.FPP);
     }
 
     /**
-     * 基于Guava实现的BloomFilter
+     * 基于Guava实现的BloomFilter-单机的，使用JDK自带的BitSet来实现
      *
      * @return
      */

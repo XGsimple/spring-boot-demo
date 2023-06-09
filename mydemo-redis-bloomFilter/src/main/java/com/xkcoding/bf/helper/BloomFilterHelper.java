@@ -8,9 +8,7 @@ package com.xkcoding.bf.helper;
 import com.google.common.base.Preconditions;
 import com.google.common.hash.Funnel;
 import com.google.common.hash.Hashing;
-import org.springframework.stereotype.Component;
 
-@Component
 public class BloomFilterHelper<T> {
 
     private int numHashFunctions;
