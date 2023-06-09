@@ -9,6 +9,7 @@ import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StopWatch;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,6 +74,8 @@ public class RedisBloomFilter {
      */
     public <T> void batchAddByBloomFilter(BloomFilterHelper<T> bloomFilterHelper, String key, List<T> values) {
         Preconditions.checkArgument(bloomFilterHelper != null, "bloomFilterHelper不能为空");
+        StopWatch stopWatch = new StopWatch("batchAddByBloomFilter");
+        stopWatch.start();
         RedisSerializer<String> strSerializer = redisTemplate.getStringSerializer();
         byte[] rawKey = strSerializer.serialize(key);
         List<List<T>> subList = getSubList(values, Constant.PIPLINE_LIST_LEN);
@@ -84,7 +87,7 @@ public class RedisBloomFilter {
                 theList.forEach(v -> {
                     int[] offset = bloomFilterHelper.murmurHashOffset(v);
                     for (int i : offset) {
-                        //基于原生connection操作，如果使用  redisTemplate.opsForValue().setBit(key, i, true);没用用
+                        //基于原生connection操作，如果使用  redisTemplate.opsForValue().setBit(key, i, true);没有用
                         connection.setBit(rawKey, i, true);
                     }
                 });
@@ -92,6 +95,9 @@ public class RedisBloomFilter {
             connection.closePipeline();
             return null;
         });
+        stopWatch.stop();
+        //10万的数据，大概13秒
+        log.info("cost {} s in bytes pipeline", stopWatch.getTotalTimeSeconds());
     }
 
     /**

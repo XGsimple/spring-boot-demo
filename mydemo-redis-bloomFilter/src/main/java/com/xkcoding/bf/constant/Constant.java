@@ -9,7 +9,7 @@ public class Constant {
     /**
      * 预计要插入多少数据
      */
-    public static final int EXPECTED_INSERTIONS = 1000;
+    public static final int EXPECTED_INSERTIONS = 100000;
     /**
      * 期望的误判率
      */
