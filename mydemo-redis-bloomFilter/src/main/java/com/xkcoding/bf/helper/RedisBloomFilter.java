@@ -79,6 +79,7 @@ public class RedisBloomFilter {
         RedisSerializer<String> strSerializer = redisTemplate.getStringSerializer();
         byte[] rawKey = strSerializer.serialize(key);
         List<List<T>> subList = getSubList(values, Constant.PIPLINE_LIST_LEN);
+        //基于RedisCallback
         redisTemplate.executePipelined((RedisCallback<String>)connection -> {
             log.info("pipeline0 = {}", connection.isPipelined());
             connection.openPipeline();
@@ -95,8 +96,26 @@ public class RedisBloomFilter {
             connection.closePipeline();
             return null;
         });
+        //基于SessionCallback
+        //        redisTemplate.executePipelined(new SessionCallback<Object>() {
+        //            @Override
+        //            public <K, V> Object execute(RedisOperations<K, V> operations) throws DataAccessException {
+        //                ValueOperations<String, Object> valueOperations = (ValueOperations<String, Object>)operations.opsForValue();
+        //                subList.forEach(theList -> {
+        //                    theList.forEach(v -> {
+        //                        int[] offset = bloomFilterHelper.murmurHashOffset(v);
+        //                        for (int i : offset) {
+        //                            //基于原生connection操作，如果使用  redisTemplate.opsForValue().setBit(key, i, true);没有用
+        //                            valueOperations.setBit(key, i, true);
+        //                        }
+        //                    });
+        //                });
+        //                return null;
+        //            }
+        //        });
+
         stopWatch.stop();
-        //10万的数据，大概13秒
+        //10万的数据，大概11秒
         log.info("cost {} s in bytes pipeline", stopWatch.getTotalTimeSeconds());
     }
 
