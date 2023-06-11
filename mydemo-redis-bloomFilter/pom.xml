@@ -39,7 +39,6 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>19.0</version>
         </dependency>
         <!-- 引入 jackson 对象json转换 -->
         <dependency>

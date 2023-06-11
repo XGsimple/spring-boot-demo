@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.RedisSerializer;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
 
 import java.util.ArrayList;
@@ -20,13 +20,16 @@ import java.util.stream.Collectors;
  * @date 2021/6/17 20:12
  */
 @Slf4j
-@Service
+@Component
 public class RedisBloomFilter {
     @Autowired
     private RedisTemplate redisTemplate;
 
     @Autowired
     private BloomFilter<CharSequence> bloomFilterStr;
+
+    @Autowired
+    private BloomFilterHelper defaultBloomFilterHelper;
 
     /**
      * 根据给定的Guava布隆过滤器添加值--单机的，使用JDK自带的BitSet来实现
@@ -45,6 +48,13 @@ public class RedisBloomFilter {
     /**
      * 根据给定的布隆过滤器添加值--基于redis的BitMap实现
      */
+    public <T> void addByBloomFilter(String key, T value) {
+        addByBloomFilter(defaultBloomFilterHelper, key, value);
+    }
+
+    /**
+     * 根据给定的布隆过滤器添加值--基于redis的BitMap实现
+     */
     public <T> void addByBloomFilter(BloomFilterHelper<T> bloomFilterHelper, String key, T value) {
         Preconditions.checkArgument(bloomFilterHelper != null, "bloomFilterHelper不能为空");
         int[] offset = bloomFilterHelper.murmurHashOffset(value);
@@ -52,6 +62,13 @@ public class RedisBloomFilter {
             //            System.out.println("key : " + key + " " + "value : " + i);
             redisTemplate.opsForValue().setBit(key, i, true);
         }
+    }
+
+    /**
+     * 根据给定的布隆过滤器判断值是否存在--基于redis的BitMap实现
+     */
+    public <T> boolean includeByBloomFilter(String key, T value) {
+        return includeByBloomFilter(defaultBloomFilterHelper, key, value);
     }
 
     /**
@@ -67,6 +84,13 @@ public class RedisBloomFilter {
             }
         }
         return true;
+    }
+
+    /**
+     * 批量根据给定的布隆过滤器添加值--基于redis的BitMap实现
+     */
+    public <T> void batchAddByBloomFilter(String key, List<T> values) {
+        batchAddByBloomFilter(defaultBloomFilterHelper, key, values);
     }
 
     /**

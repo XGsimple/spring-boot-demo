@@ -21,9 +21,6 @@ class RedisBloomFilterTest {
     @Autowired
     private RedisBloomFilter redisBloomFilter;
 
-    @Autowired
-    private BloomFilterHelper bloomFilterHelper;
-
     @Test
     @DisplayName("Google提供的一个Guava布隆过滤器的实现--单机的，使用JDK自带的BitSet来实现")
     void includeByGuavaBloomFilter() {
@@ -46,10 +43,10 @@ class RedisBloomFilterTest {
     void includeByBloomFilter() {
         String key = "bloom";
         List<String> values = IntStream.range(0, Constant.EXPECTED_INSERTIONS).boxed().map(i -> "test" + i).collect(Collectors.toList());
-        redisBloomFilter.batchAddByBloomFilter(bloomFilterHelper, key, values);
-        boolean containsValue1 = redisBloomFilter.includeByBloomFilter(bloomFilterHelper, key, "test1");
-        boolean containsValue2 = redisBloomFilter.includeByBloomFilter(bloomFilterHelper, key, "test34");
-        boolean containsValue3 = redisBloomFilter.includeByBloomFilter(bloomFilterHelper, key, "test1000001");
+        redisBloomFilter.batchAddByBloomFilter(key, values);
+        boolean containsValue1 = redisBloomFilter.includeByBloomFilter(key, "test1");
+        boolean containsValue2 = redisBloomFilter.includeByBloomFilter(key, "test34");
+        boolean containsValue3 = redisBloomFilter.includeByBloomFilter(key, "test1000001");
         System.out.println(containsValue1);
         System.out.println(containsValue2);
         System.out.println(containsValue3);

@@ -1,6 +1,5 @@
 package com.xkcoding.bf.controller;
 
-import com.xkcoding.bf.helper.BloomFilterHelper;
 import com.xkcoding.bf.helper.RedisBloomFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,14 +16,11 @@ public class TestController {
     @Autowired
     RedisBloomFilter redisBloomFilter;
 
-    @Autowired
-    private BloomFilterHelper bloomFilterHelper;
-
     @ResponseBody
     @RequestMapping("/add")
     public String addBloomFilter(@RequestParam("orderNum") String orderNum) {
         try {
-            redisBloomFilter.addByBloomFilter(bloomFilterHelper, "bloom", orderNum);
+            redisBloomFilter.addByBloomFilter("bloom", orderNum);
         } catch (Exception e) {
             e.printStackTrace();
             return "添加失败";
@@ -35,7 +31,7 @@ public class TestController {
     @ResponseBody
     @RequestMapping("/check")
     public boolean checkBloomFilter(@RequestParam("orderNum") String orderNum) {
-        boolean b = redisBloomFilter.includeByBloomFilter(bloomFilterHelper, "bloom", orderNum);
+        boolean b = redisBloomFilter.includeByBloomFilter("bloom", orderNum);
         return b;
     }
 }
