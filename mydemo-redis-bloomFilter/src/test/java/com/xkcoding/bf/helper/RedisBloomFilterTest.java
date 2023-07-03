@@ -42,7 +42,11 @@ class RedisBloomFilterTest {
     @DisplayName("自定义的布隆过滤器--基于redis的BitMap实现")
     void includeByBloomFilter() {
         String key = "bloom";
-        List<String> values = IntStream.range(0, Constant.EXPECTED_INSERTIONS).boxed().map(i -> "test" + i).collect(Collectors.toList());
+        List<String> values = IntStream.range(0, Constant.EXPECTED_INSERTIONS)
+                                       .boxed()
+                                       .map(i -> "test" + i)
+                                       .collect(Collectors.toList());
+        //rediscallback和sessioncallback的区别，https://www.zhihu.com/question/599719800
         redisBloomFilter.batchAddByBloomFilter(key, values);
         boolean containsValue1 = redisBloomFilter.includeByBloomFilter(key, "test1");
         boolean containsValue2 = redisBloomFilter.includeByBloomFilter(key, "test34");

@@ -1,9 +1,7 @@
 package com.xkcoding.orm.mybatis.mapper;
 
 import com.xkcoding.orm.mybatis.entity.User;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -44,6 +42,20 @@ public interface UserMapper {
      * @return 成功 - {@code 1} 失败 - {@code 0}
      */
     int saveUser(@Param("user") User user);
+
+    /**
+     * 保存用户-基于注解，并返回主键
+     *
+     * @param user 用户
+     * @return 成功 - {@code 1} 失败 - {@code 0}
+     */
+    //返回非自增主键
+    //@SelectKey(statement = "SELECT LAST INSERT ID {)", keyProperty = "id", resultType = Long.class, before = false)
+    //返回自增主键
+    @Options(useGeneratedKeys = true, keyProperty = "id")
+    @Insert("INSERT INTO orm_user (name,password,salt,email,phone_number,status,create_time,last_login_time,last_update_time)" +
+            "VALUES (#{user.name},#{user.password},#{user.salt},#{user.email},#{user.phoneNumber},#{user.status},#{user.createTime},#{user.lastLoginTime},#{user.lastUpdateTime})")
+    int saveUserByAnnotation(User user);
 
     /**
      * 删除用户
