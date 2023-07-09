@@ -6,14 +6,17 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xkcoding.orm.mybatis.plus.SpringBootDemoOrmMybatisPlusApplicationTests;
+import com.xkcoding.orm.mybatis.plus.constant.StatusEnum;
 import com.xkcoding.orm.mybatis.plus.entity.User;
 import com.xkcoding.orm.mybatis.plus.mapper.UserMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +24,7 @@ import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -51,7 +55,15 @@ public class UserServiceTest extends SpringBootDemoOrmMybatisPlusApplicationTest
     @Test
     public void testSave() {
         String salt = IdUtil.fastSimpleUUID();
-        User testSave3 = User.builder().name("testSave3").password(SecureUtil.md5("123456" + salt)).salt(salt).email("testSave3@xkcoding.com").phoneNumber("17300000003").status(1).lastLoginTime(new DateTime()).build();
+        User testSave3 = User.builder()
+                             .name("testSave3")
+                             .password(SecureUtil.md5("123456" + salt))
+                             .salt(salt)
+                             .email("testSave3@xkcoding.com")
+                             .phoneNumber("17300000003")
+                             .status(StatusEnum.ENABLE)
+                             .lastLoginTime(new DateTime())
+                             .build();
         boolean save = userService.save(testSave3);
         assertThat(save).isTrue();
         log.debug("【测试id回显#testSave3.getId()】= {}", testSave3.getId());
@@ -65,7 +77,15 @@ public class UserServiceTest extends SpringBootDemoOrmMybatisPlusApplicationTest
         List<User> userList = Lists.newArrayList();
         for (int i = 0; i < 21; i++) {
             String salt = IdUtil.fastSimpleUUID();
-            User user = User.builder().name("user_" + i).age(RandomUtil.randomInt(10, 100)).password(SecureUtil.md5("123456" + salt)).salt(salt).email("testSave" + i + "@xkcoding.com").phoneNumber("1730000000" + i).status(1).build();
+            User user = User.builder()
+                            .name("user_" + i)
+                            .age(RandomUtil.randomInt(10, 100))
+                            .password(SecureUtil.md5("123456" + salt))
+                            .salt(salt)
+                            .email("testSave" + i + "@xkcoding.com")
+                            .phoneNumber("1730000000" + i)
+                            .status(StatusEnum.ENABLE)
+                            .build();
             userList.add(user);
         }
         boolean batch = userService.saveBatch(userList);
@@ -108,6 +128,8 @@ public class UserServiceTest extends SpringBootDemoOrmMybatisPlusApplicationTest
         User user = userService.getById(1L);
         assertThat(user).isNotNull();
         log.debug("【user】= {}", user);
+        String userJson = JSON.toJSONString(user);
+        log.debug("【userJson】= {}", userJson);
     }
 
     /**
@@ -126,9 +148,9 @@ public class UserServiceTest extends SpringBootDemoOrmMybatisPlusApplicationTest
     @Test
     public void testQueryByPageAndSort() {
         initData();
-        int count = userService.count(new QueryWrapper<>());
+        long count = userService.count(new QueryWrapper<>());
         Page<User> userPage = new Page<>(1, 5);
-        userPage.setDesc("id");
+        userPage.setOrders(Collections.singletonList(OrderItem.desc("id")));
         IPage<User> page = userService.page(userPage, new QueryWrapper<>());
         assertThat(page.getSize()).isEqualTo(5);
         assertThat(page.getTotal()).isEqualTo(count);
@@ -142,7 +164,7 @@ public class UserServiceTest extends SpringBootDemoOrmMybatisPlusApplicationTest
     public void testQueryByCondition() {
         QueryWrapper<User> wrapper = new QueryWrapper<>();
         wrapper.like("name", "Save1").or().eq("phone_number", "17300000001").orderByDesc("id");
-        int count = userService.count(wrapper);
+        long count = userService.count(wrapper);
         Page<User> userPage = new Page<>(1, 3);
         IPage<User> page = userService.page(userPage, wrapper);
         assertThat(page.getSize()).isEqualTo(3);
@@ -181,7 +203,6 @@ public class UserServiceTest extends SpringBootDemoOrmMybatisPlusApplicationTest
 
     }
 
-
     /**
      * between区间查询，查找用户年龄在20-30的用户
      */
@@ -190,7 +211,7 @@ public class UserServiceTest extends SpringBootDemoOrmMybatisPlusApplicationTest
         LambdaQueryWrapper<User> lambdaQueryWrapper = Wrappers.<User>lambdaQuery();
         lambdaQueryWrapper.select(User::getName);
         lambdaQueryWrapper.between(User::getAge, 20, 30);//区间
-        int count = userService.count(lambdaQueryWrapper);
+        long count = userService.count(lambdaQueryWrapper);
         log.debug("【between】{}人 : 20到30年龄区间", count);
     }
 
@@ -219,13 +240,12 @@ public class UserServiceTest extends SpringBootDemoOrmMybatisPlusApplicationTest
         lambdaQueryWrapper.select(User::getName, User::getAge);
         boolean condition = true;
         lambdaQueryWrapper.func(i -> {
-                if (condition) {
-                    i.eq(User::getAge, 22);
-                } else {
-                    i.eq(User::getAge, 33);
-                }
+            if (condition) {
+                i.eq(User::getAge, 22);
+            } else {
+                i.eq(User::getAge, 33);
             }
-        );
+        });
         List<User> users = userService.list(lambdaQueryWrapper);
         users.forEach(System.out::println);
     }
@@ -240,27 +260,26 @@ public class UserServiceTest extends SpringBootDemoOrmMybatisPlusApplicationTest
     public void wrapper4Test() {
         LambdaQueryWrapper<User> lambdaQueryWrapper = Wrappers.<User>lambdaQuery();
         lambdaQueryWrapper.select(User::getName, User::getAge);
-        lambdaQueryWrapper
-            .likeRight(User::getName, "user")
-            .or()
-            .nested(i -> i.gt(User::getAge, 50).eq(User::getDeleted,0));
+        lambdaQueryWrapper.likeRight(User::getName, "user")
+                          .or()
+                          .nested(i -> i.gt(User::getAge, 50).eq(User::getDeleted, 0));
         List<User> users = userService.list(lambdaQueryWrapper);
         users.forEach(System.out::println);
     }
 
     /**
-     *apply 拼接sql
+     * apply 拼接sql
      * 该方法可用于数据库函数 动态入参的params对应前面applySql内部的{index}部分.
      * 这样是不会有sql注入风险的,反之会有!
-     *SELECT name,age
-     *FROM orm_user
-     *WHERE deleted=0 AND (date_format(create_time,'%Y-%m-%d')=‘2020-12-24’)
+     * SELECT name,age
+     * FROM orm_user
+     * WHERE deleted=0 AND (date_format(create_time,'%Y-%m-%d')=‘2020-12-24’)
      */
     @Test
     public void wrapper5Test() {
         LambdaQueryWrapper<User> lambdaQueryWrapper = Wrappers.<User>lambdaQuery();
         lambdaQueryWrapper.select(User::getName, User::getCreateTime);
-        lambdaQueryWrapper.apply("date_format(create_time,'%Y-%m-%d')={0}","2020-12-23");
+        lambdaQueryWrapper.apply("date_format(create_time,'%Y-%m-%d')={0}", "2020-12-23");
         List<User> users = userService.list(lambdaQueryWrapper);
         users.forEach(System.out::println);
     }
@@ -277,7 +296,7 @@ public class UserServiceTest extends SpringBootDemoOrmMybatisPlusApplicationTest
     @Test
     public void wrapper6Test() {
         LambdaQueryWrapper<User> lambdaQueryWrapper = Wrappers.<User>lambdaQuery();
-        lambdaQueryWrapper.select(User.class,i->i.getFieldFill()== FieldFill.DEFAULT);
+        lambdaQueryWrapper.select(User.class, i -> i.getFieldFill() == FieldFill.DEFAULT);
         List<User> users = userService.list(lambdaQueryWrapper);
         users.forEach(System.out::println);
     }
@@ -290,7 +309,7 @@ public class UserServiceTest extends SpringBootDemoOrmMybatisPlusApplicationTest
         User user = userMapper.myGetUserById(1L);
         List<User> users = userMapper.mySelectAll();
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.select("id","name").eq("age",22);
+        queryWrapper.select("id", "name").eq("age", 22);
         List<User> usersByWrapper = userMapper.mySelectByMyWrapper(queryWrapper);
 
         log.debug("【user】= {}", user);
@@ -301,8 +320,8 @@ public class UserServiceTest extends SpringBootDemoOrmMybatisPlusApplicationTest
         UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
         User updateUser = new User();
         updateUser.setEmail("update@user.com");
-        updateWrapper.eq("age",14);
-        userMapper.myUpdateByMyWrapper(updateWrapper,updateUser);
+        updateWrapper.eq("age", 14);
+        userMapper.myUpdateByMyWrapper(updateWrapper, updateUser);
     }
 
     /**

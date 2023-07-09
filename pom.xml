@@ -75,6 +75,7 @@
         <module>mydemo-redis-bloomFilter</module>
         <module>mydemo-druid</module>
         <module>mydemo-test-temple</module>
+        <module>mydemo-delay</module>
     </modules>
     <packaging>pom</packaging>
 

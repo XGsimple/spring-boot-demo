@@ -1,6 +1,9 @@
 package com.xkcoding.orm.mybatis.plus.entity;
 
+import com.alibaba.fastjson.annotation.JSONField;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.baomidou.mybatisplus.annotation.*;
+import com.xkcoding.orm.mybatis.plus.constant.StatusEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -66,7 +69,9 @@ public class User implements Serializable {
     /**
      * 状态，-1：逻辑删除，0：禁用，1：启用
      */
-    private Integer status;
+    //局部处理
+    @JSONField(serialzeFeatures = SerializerFeature.WriteEnumUsingToString)
+    private StatusEnum status;
 
     /**
      * 版本号，用于乐观锁

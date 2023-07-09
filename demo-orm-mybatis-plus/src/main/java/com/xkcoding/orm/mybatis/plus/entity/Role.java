@@ -36,7 +36,7 @@ public class Role extends Model<Role> {
      * 即使使用 ActiveRecord 不会用到 RoleMapper，RoleMapper 这个接口也必须创建
      */
     @Override
-    protected Serializable pkVal() {
+    public Serializable pkVal() {
 
         return this.id;
     }
