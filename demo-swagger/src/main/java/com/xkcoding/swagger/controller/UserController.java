@@ -1,6 +1,6 @@
 package com.xkcoding.swagger.controller;
 
-import com.xkcoding.swagger.common.ApiResponse;
+import com.xkcoding.swagger.common.ApiResp;
 import com.xkcoding.swagger.common.DataType;
 import com.xkcoding.swagger.common.ParamType;
 import com.xkcoding.swagger.entity.User;
@@ -8,6 +8,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,18 +31,26 @@ import java.util.List;
 public class UserController {
     @GetMapping
     @ApiOperation(value = "条件查询（DONE）", notes = "备注")
-    @ApiImplicitParams({@ApiImplicitParam(name = "username", value = "用户名", dataType = DataType.STRING, paramType = ParamType.QUERY, defaultValue = "xxx")})
-    public ApiResponse<User> getByUserName(String username) {
+    @ApiImplicitParams({@ApiImplicitParam(name = "username",
+                                          value = "用户名",
+                                          dataType = DataType.STRING,
+                                          paramType = ParamType.QUERY,
+                                          defaultValue = "xxx")})
+    @ApiResponses({@ApiResponse(responseCode = "408", description = "指定业务得报错信息，返回客户端"),
+                   @ApiResponse(responseCode = "400", description = "请求参数没填好"),
+                   @ApiResponse(responseCode = "404", description = "请求路径没有或页面跳转路径不对")})
+    public ApiResp<User> getByUserName(String username) {
         log.info("多个参数用  @ApiImplicitParams");
-        return ApiResponse.<User>builder().code(200).message("操作成功").data(new User(1, username, "JAVA")).build();
+        return ApiResp.<User>builder().code(200).message("操作成功").data(new User(1, username, "JAVA")).build();
     }
 
     @GetMapping("/{id}")
     @ApiOperation(value = "主键查询（DONE）", notes = "备注")
-    @ApiImplicitParams({@ApiImplicitParam(name = "id", value = "用户编号", dataType = DataType.INT, paramType = ParamType.PATH)})
-    public ApiResponse<User> get(@PathVariable Integer id) {
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "id", value = "用户编号", dataType = DataType.INT, paramType = ParamType.PATH)})
+    public ApiResp<User> get(@PathVariable Integer id) {
         log.info("单个参数用  @ApiImplicitParam");
-        return ApiResponse.<User>builder().code(200).message("操作成功").data(new User(id, "u1", "p1")).build();
+        return ApiResp.<User>builder().code(200).message("操作成功").data(new User(id, "u1", "p1")).build();
     }
 
     @DeleteMapping("/{id}")
