@@ -1,6 +1,7 @@
 package com.xkcoding.swagger.config;
 
 import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
+import com.github.xiaoymin.knife4j.spring.annotations.EnableKnife4j;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,6 +44,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Configuration
 @EnableSwagger2WebMvc
+@EnableKnife4j
 public class Knife4jConfig implements WebMvcConfigurer {
     @Value("${spring.profiles.active:''}")
     private String active;
@@ -86,8 +88,7 @@ public class Knife4jConfig implements WebMvcConfigurer {
                                                                .build();
 
         docket.securitySchemes(securitySchemes()).securityContexts(securityContexts());
-        String ipAddress =
-            !active.equalsIgnoreCase("local") ? InetAddress.getLocalHost().getHostAddress() : "localhost";
+        String ipAddress = active.equalsIgnoreCase("prod") ? InetAddress.getLocalHost().getHostAddress() : "localhost";
         // 控制台输出Swagger2接口文档地址
         log.info("Swagger2接口文档地址: http://{}:{}{}/swagger-ui.html", ipAddress, port, contextPath);
         // 控制台输出Knife4j增强接口文档地址
@@ -130,11 +131,11 @@ public class Knife4jConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        //registry.addResourceHandler("/**").addResourceLocations("classpath:/static/");
+        registry.addResourceHandler("/**").addResourceLocations("classpath:/static/");
         //放开swagger地址
-        //registry.addResourceHandler("swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
+        registry.addResourceHandler("swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
         //registry.addResourceHandler("/doc.html").addResourceLocations("classpath*:/META-INF/resources/");
-        //registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
+        registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
     }
 
     /**

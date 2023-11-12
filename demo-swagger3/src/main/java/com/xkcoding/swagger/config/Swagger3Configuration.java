@@ -54,8 +54,7 @@ public class Swagger3Configuration {
             .paths(PathSelectors.any())
             .build();
 
-        String ipAddress =
-            !active.equalsIgnoreCase("local") ? InetAddress.getLocalHost().getHostAddress() : "localhost";
+        String ipAddress = active.equalsIgnoreCase("prod") ? InetAddress.getLocalHost().getHostAddress() : "localhost";
         // 控制台输出Swagger3接口文档地址
         log.info("Swagger3接口文档地址: http://{}:{}{}/swagger-ui/index.html", ipAddress, port, contextPath);
         // 控制台输出Knife4j增强接口文档地址
