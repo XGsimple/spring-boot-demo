@@ -6,10 +6,7 @@ import com.xkcoding.bf.constant.Constant;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.data.redis.core.RedisOperations;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.SessionCallback;
-import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.core.*;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
@@ -107,22 +104,21 @@ public class RedisBloomFilter {
         byte[] rawKey = strSerializer.serialize(key);
         List<List<T>> subList = getSubList(values, Constant.PIPLINE_LIST_LEN);
         //基于RedisCallback
-        //        redisTemplate.executePipelined((RedisCallback<String>)connection -> {
-        //            log.info("pipeline0 = {}", connection.isPipelined());
-        //            connection.openPipeline();
-        //            log.info("pipeline1 = {}", connection.isPipelined());
-        //            subList.forEach(theList -> {
-        //                theList.forEach(v -> {
-        //                    int[] offset = bloomFilterHelper.murmurHashOffset(v);
-        //                    for (int i : offset) {
-        //                        //基于原生connection操作，如果使用  redisTemplate.opsForValue().setBit(key, i, true);没有用
-        //                        connection.setBit(rawKey, i, true);
-        //                    }
-        //                });
-        //            });
-        //            connection.closePipeline();
-        //            return null;
-        //        });
+        redisTemplate.executePipelined((RedisCallback<String>)connection -> {
+            //executePipelined默认自动开启、关闭管道pipeline
+            log.info("pipeline = {}", connection.isPipelined());
+            subList.forEach(theList -> {
+                theList.forEach(v -> {
+                    int[] offset = bloomFilterHelper.murmurHashOffset(v);
+                    for (int i : offset) {
+                        //基于原生connection操作，如果使用  redisTemplate.opsForValue().setBit(key, i, true);没有用
+                        connection.setBit(rawKey, i, true);
+                    }
+                });
+            });
+            return null;
+        });
+
         //基于SessionCallback
         redisTemplate.executePipelined(new SessionCallback<Object>() {
             @Override

@@ -428,7 +428,7 @@ public class DirectQueueOneHandler {
 ## SpringBootDemoMqRabbitmqApplicationTests.java
 
 ```java
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class SpringBootDemoMqRabbitmqApplicationTests {
     @Autowired

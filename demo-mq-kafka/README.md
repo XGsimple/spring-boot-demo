@@ -206,7 +206,7 @@ public class MessageHandler {
 ## SpringBootDemoMqKafkaApplicationTests.java
 
 ```java
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class SpringBootDemoMqKafkaApplicationTests {
     @Autowired

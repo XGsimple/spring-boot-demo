@@ -24,7 +24,7 @@ import java.util.List;
  * @date Created in 2019-03-26 13:44
  */
 @Slf4j
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class SpringBootDemoShardingJdbcApplicationTests {
     @Autowired

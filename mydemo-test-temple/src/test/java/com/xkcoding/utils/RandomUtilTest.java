@@ -16,6 +16,9 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+ * https://blog.csdn.net/dadiyang/article/details/109703348?spm=1001.2101.3001.6650.1&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-1-109703348-blog-89390407.235%5Ev28%5Epc_relevant_t0_download&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-1-109703348-blog-89390407.235%5Ev28%5Epc_relevant_t0_download
+ */
 @Slf4j
 class RandomUtilTest {
 

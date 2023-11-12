@@ -18,7 +18,7 @@ import javax.annotation.Resource;
  * @version v1.0
  * @since 2019-08-26 1:06
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class LdapDemoApplicationTests {
 

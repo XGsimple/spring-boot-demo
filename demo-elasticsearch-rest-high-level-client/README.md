@@ -418,7 +418,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class ElasticsearchApplicationTests {
 

@@ -26,7 +26,7 @@ import java.io.OutputStream;
  * @author yangkai.shen
  * @date Created in 2019-03-22 10:34
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @Slf4j
 public class CodeGenServiceTest {
