@@ -4,7 +4,12 @@ import com.xkcoding.swagger.common.ApiResp;
 import com.xkcoding.swagger.common.DataType;
 import com.xkcoding.swagger.common.ParamType;
 import com.xkcoding.swagger.entity.User;
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,9 +36,9 @@ public class UserController {
                                           dataType = DataType.STRING,
                                           paramType = ParamType.QUERY,
                                           defaultValue = "xxx")})
-    @ApiResponses({@ApiResponse(code = 408, message = "指定业务得报错信息，返回客户端"),
-                   @ApiResponse(code = 400, message = "请求参数没填好"),
-                   @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")})
+    @ApiResponses({@ApiResponse(responseCode = "408", description = "指定业务得报错信息，返回客户端"),
+                   @ApiResponse(responseCode = "400", description = "请求参数没填好"),
+                   @ApiResponse(responseCode = "404", description = "请求路径没有或页面跳转路径不对")})
     public ApiResp<User> getByUserName(String username) {
         log.info("多个参数用  @ApiImplicitParams");
         return ApiResp.<User>builder().code(200).message("操作成功").data(new User(1, username, "JAVA")).build();

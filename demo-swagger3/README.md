@@ -1,8 +1,8 @@
 # spring-boot-demo-swagger
 
-> 此 demo 主要演示了 Spring Boot springboot2集成knife4j（swagger2），自动生成 API 文档。
+> 此 demo 主要演示了 Spring Boot 如何集成原生 swagger ，自动生成 API 文档。
 >
-> 启动项目，访问地址：http://localhost:8080/demo/doc.html#/home
+> 启动项目，访问地址：http://localhost:8080/demo/swagger-ui/index.html
 
 # Swagger 注解
 
