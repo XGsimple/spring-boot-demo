@@ -88,8 +88,8 @@ public class Knife4jConfig implements WebMvcConfigurer {
         docket.securitySchemes(securitySchemes()).securityContexts(securityContexts());
         String ipAddress =
             !active.equalsIgnoreCase("local") ? InetAddress.getLocalHost().getHostAddress() : "localhost";
-        // 控制台输出Swagger3接口文档地址
-        log.info("Swagger3接口文档地址: http://{}:{}{}/swagger-ui.html", ipAddress, port, contextPath);
+        // 控制台输出Swagger2接口文档地址
+        log.info("Swagger2接口文档地址: http://{}:{}{}/swagger-ui.html", ipAddress, port, contextPath);
         // 控制台输出Knife4j增强接口文档地址
         log.info("Knife4j增强接口文档地址: http://{}:{}{}/doc.html", ipAddress, port, contextPath);
         return docket;
