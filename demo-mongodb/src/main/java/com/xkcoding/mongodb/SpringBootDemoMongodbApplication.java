@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
  * <p>
  * 启动器
  * </p>
+ * http://www.mydlq.club/article/85/
  *
  * @author yangkai.shen
  * @date Created in 2018-12-28 16:14
