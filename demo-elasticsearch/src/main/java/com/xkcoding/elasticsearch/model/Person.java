@@ -19,7 +19,7 @@ import java.util.Date;
  * @author yangkai.shen
  * @date Created in 2018-12-20 17:29
  */
-@Document(indexName = EsConsts.INDEX_NAME, type = EsConsts.TYPE_NAME, shards = 1, replicas = 0)
+@Document(indexName = EsConsts.INDEX_NAME, shards = 1, replicas = 0)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -31,15 +31,15 @@ public class Person {
     private Long id;
 
     /**
-     * 名字
+     * 名字，index = true参与搜索
      */
     @Field(type = FieldType.Keyword)
     private String name;
 
     /**
-     * 国家
+     * 国家，index = true参与搜索
      */
-    @Field(type = FieldType.Keyword)
+    @Field(type = FieldType.Keyword, index = true)
     private String country;
 
     /**
