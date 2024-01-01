@@ -22,7 +22,9 @@ public class HotelDoc {
     private String business;
     private String location;
     private String pic;
+    //距离，用字符串表示，以便在索引时，根据距离的大小进行排序
     private Object distance;
+    //是否是广告
     private Boolean isAD;
     private List<String> suggestion;
 

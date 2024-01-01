@@ -6,6 +6,7 @@ import com.xkcoding.elasticsearch.pojo.HotelDoc;
 import com.xkcoding.elasticsearch.service.IHotelService;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.bulk.BulkRequest;
+import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
@@ -32,6 +33,11 @@ class HotelDocumentTest {
     @Autowired
     private IHotelService hotelService;
 
+    /**
+     * 新增文档
+     *
+     * @throws IOException
+     */
     @Test
     void testAddDocument() throws IOException {
         // 1.查询数据库hotel数据
@@ -42,13 +48,18 @@ class HotelDocumentTest {
         String json = JSON.toJSONString(hotelDoc);
 
         // 1.准备Request
-        IndexRequest request = new IndexRequest("hotel").id(hotelDoc.getId().toString());
+        IndexRequest request = new IndexRequest("hotel").id(hotelDoc.getId().toString()).timeout("2s");
         // 2.准备请求参数DSL，其实就是文档的JSON字符串
         request.source(json, XContentType.JSON);
         // 3.发送请求
         client.index(request, RequestOptions.DEFAULT);
     }
 
+    /**
+     * 查询文档
+     *
+     * @throws IOException
+     */
     @Test
     void testGetDocumentById() throws IOException {
         // 1.准备Request      // GET /hotel/_doc/{id}
@@ -62,6 +73,11 @@ class HotelDocumentTest {
         System.out.println("hotelDoc = " + hotelDoc);
     }
 
+    /**
+     * 删除文档
+     *
+     * @throws IOException
+     */
     @Test
     void testDeleteDocumentById() throws IOException {
         // 1.准备Request      // DELETE /hotel/_doc/{id}
@@ -70,16 +86,29 @@ class HotelDocumentTest {
         client.delete(request, RequestOptions.DEFAULT);
     }
 
+    /**
+     * 更新文档
+     * 需要将对象中的属性全部指定值，不然会被设置为空，如User只设置了名称，那么只有名称会被修改成功，其他会被修改为null。
+     *
+     * @throws IOException
+     */
     @Test
     void testUpdateById() throws IOException {
         // 1.准备Request
-        UpdateRequest request = new UpdateRequest("hotel", "61083");
+        UpdateRequest request = new UpdateRequest("hotel", "56214");
+        Hotel hotel = hotelService.getById(61083L);
         // 2.准备参数
-        request.doc("price", "870");
+        request.doc("isAD", "true");
+        //request.doc(JSONUtil.toJsonStr(hotel), XContentType.JSON);
         // 3.发送请求
         client.update(request, RequestOptions.DEFAULT);
     }
 
+    /**
+     * 批量新增文档数据
+     *
+     * @throws IOException
+     */
     @Test
     void testBulkRequest() throws IOException {
         // 查询所有的酒店数据
@@ -98,12 +127,14 @@ class HotelDocumentTest {
         }
 
         // 3.发送请求
-        client.bulk(request, RequestOptions.DEFAULT);
+        BulkResponse bulkResponse = client.bulk(request, RequestOptions.DEFAULT);
+        //是否执行失败,false为执行成功
+        System.out.println(bulkResponse.hasFailures());
     }
 
     @BeforeEach
     void setUp() {
-        client = new RestHighLevelClient(RestClient.builder(HttpHost.create("http://192.168.150.101:9200")));
+        client = new RestHighLevelClient(RestClient.builder(HttpHost.create("http://192.168.3.137:31364")));
     }
 
     @AfterEach

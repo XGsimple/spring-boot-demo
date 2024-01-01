@@ -10,7 +10,7 @@ import org.springframework.data.elasticsearch.annotations.GeoPointField;
 
 @Data
 @NoArgsConstructor
-@Document(indexName = "hema_hotel", shards = 1, replicas = 0)
+@Document(indexName = "hotel", shards = 1, replicas = 0)
 public class HotelEs {
     @Id
     private Long id;

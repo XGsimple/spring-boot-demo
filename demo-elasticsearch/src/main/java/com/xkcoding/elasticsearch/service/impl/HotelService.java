@@ -63,7 +63,7 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
             int page = params.getPage();
             int size = params.getSize();
             request.source().from((page - 1) * size).size(size);
-            // 2.3.距离排序
+            // 2.3.按照距离排序。附近的酒店案例
             String location = params.getLocation();
             if (StringUtils.isNotBlank(location)) {
                 request.source()
@@ -233,19 +233,18 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
             boolQuery.filter(QueryBuilders.rangeQuery("price").gte(minPrice).lte(maxPrice));
         }
 
-        // 2.算分函数查询
+        // 2.算分函数查询。广告置顶案例
         FunctionScoreQueryBuilder functionScoreQuery = QueryBuilders.functionScoreQuery(boolQuery, // 原始查询，boolQuery
                                                                                         new FunctionScoreQueryBuilder.FilterFunctionBuilder[] {
                                                                                             // function数组
                                                                                             new FunctionScoreQueryBuilder.FilterFunctionBuilder(
+                                                                                                // 过滤条件
                                                                                                 QueryBuilders.termQuery(
                                                                                                     "isAD",
                                                                                                     true),
-                                                                                                // 过滤条件
-                                                                                                ScoreFunctionBuilders.weightFactorFunction(
-                                                                                                    10)
                                                                                                 // 算分函数
-                                                                                            )});
+                                                                                                ScoreFunctionBuilders.weightFactorFunction(
+                                                                                                    10))});
 
         // 3.设置查询条件
         request.source().query(functionScoreQuery);
@@ -280,6 +279,7 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
             // 4.8.排序信息
             Object[] sortValues = hit.getSortValues();
             if (sortValues.length > 0) {
+                //设置距离
                 hotelDoc.setDistance(sortValues[0]);
             }
 

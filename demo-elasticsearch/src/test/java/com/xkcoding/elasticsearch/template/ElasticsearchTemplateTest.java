@@ -44,6 +44,19 @@ public class ElasticsearchTemplateTest extends SpringBootDemoElasticsearchApplic
     private ElasticsearchRestTemplate template;
 
     /**
+     * 索引创建
+     */
+    @Test
+    public void createIndex() {
+        IndexOperations indexOperations = template.indexOps(Person.class);
+        if (!indexOperations.exists()) {
+            indexOperations.create();
+            indexOperations.putMapping();
+            log.info(String.format("[elastic]索引%s数据结构创建成功", Person.class.getSimpleName()));
+        }
+    }
+
+    /**
      * 测试新增
      */
     @Test

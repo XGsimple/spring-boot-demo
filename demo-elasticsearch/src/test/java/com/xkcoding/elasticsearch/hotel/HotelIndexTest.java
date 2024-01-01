@@ -33,6 +33,16 @@ class HotelIndexTest {
     }
 
     @Test
+    void testCreateIndex2() throws IOException {
+        // 1.准备Request      PUT /hotel
+        CreateIndexRequest request = new CreateIndexRequest("hotel");
+        // 2.准备请求参数
+        request.source(MAPPING_TEMPLATE, XContentType.JSON);
+        // 3.发送请求
+        client.indices().create(request, RequestOptions.DEFAULT);
+    }
+
+    @Test
     void testExistsIndex() throws IOException {
         // 1.准备Request
         GetIndexRequest request = new GetIndexRequest("hotel");

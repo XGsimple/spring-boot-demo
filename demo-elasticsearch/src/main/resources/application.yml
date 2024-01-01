@@ -25,7 +25,11 @@ logging:
     cn.itcast: debug
   pattern:
     dateformat: HH:mm:ss:SSS
+
 mybatis-plus:
+  # 原生配置
   configuration:
+    # 配置slq打印日志
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     map-underscore-to-camel-case: true
   type-aliases-package: com.xkcoding.elasticsearch.pojo
