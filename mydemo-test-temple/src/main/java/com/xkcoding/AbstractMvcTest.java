@@ -27,16 +27,18 @@ public class AbstractMvcTest {
     public void contextLoads() {
     }
 
-    public MvcResult testRequest(String url, HttpMethod httpMethod, String contentStr) throws Exception {
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(url)
-                                                                             .accept(MediaType.APPLICATION_JSON)
-                                                                             .contentType(MediaType.APPLICATION_JSON)
-                                                                             .content(contentStr.getBytes());
-        MvcResult mvcResult = mvc.perform(requestBuilder)
-                                 .andExpect(MockMvcResultMatchers.status().isOk())
-                                 .andDo(MockMvcResultHandlers.print())
-                                 .andReturn();
-        return mvcResult;
+    public MvcResult testRequest(String url, HttpMethod httpMethod, Object content) throws Exception {
+        if (HttpMethod.GET.equals(httpMethod)) {
+            return testGet(url);
+        } else if (HttpMethod.POST.equals(httpMethod)) {
+            if (content instanceof String) {
+                return testPost(url, (String)content);
+            } else {
+                return testPost(url, JSON.toJSONString(content));
+            }
+        } else {
+            throw new RuntimeException("Unsupported http method");
+        }
     }
 
     public MvcResult testGet(String url) throws Exception {
