@@ -8,11 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
@@ -30,10 +26,7 @@ import java.util.ArrayList;
  * @description
  * @createTime 2021/3/23 13:08
  */
-@MockitoSettings(strictness = Strictness.WARN)
-@AutoConfigureMockMvc
-@SpringBootTest
-public class UserControllerMockMvcTest {
+public class UserControllerMockMvcTest extends AbstractMvcTest {
 
     @Autowired
     private MockMvc mvc;
@@ -65,9 +58,14 @@ public class UserControllerMockMvcTest {
     public void saveUser() throws Exception {
         User user = new User("小明");
         String json = JSON.toJSONString(user);
-        mvc.perform(MockMvcRequestBuilders.post("/user/save").contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)
+        //testPost("/user/save", user);
+        mvc.perform(MockMvcRequestBuilders.post("/user/save")
+                                          .contentType(MediaType.APPLICATION_JSON)
+                                          .accept(MediaType.APPLICATION_JSON)
                                           .content(json.getBytes()) //传json参数
-                                          .session(session)).andExpect(MockMvcResultMatchers.status().isOk()).andDo(MockMvcResultHandlers.print());
+                                          .session(session))
+           .andExpect(MockMvcResultMatchers.status().isOk())
+           .andDo(MockMvcResultHandlers.print());
     }
 
     /**
@@ -79,10 +77,15 @@ public class UserControllerMockMvcTest {
     @Test
     @DisplayName("获取用户测试用例")
     public void queryUser() throws Exception {
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/user/query/1001").contentType(MediaType.APPLICATION_JSON)
-                                                                             .accept(MediaType.APPLICATION_JSON).session(this.session);
-        MvcResult mvcResult = mvc.perform(requestBuilder).andExpect(MockMvcResultMatchers.status().isOk())
-                                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("小明")).andDo(MockMvcResultHandlers.print()).andReturn();
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/user/query/1001")
+                                                                             .contentType(MediaType.APPLICATION_JSON)
+                                                                             .accept(MediaType.APPLICATION_JSON)
+                                                                             .session(this.session);
+        MvcResult mvcResult = mvc.perform(requestBuilder)
+                                 .andExpect(MockMvcResultMatchers.status().isOk())
+                                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("小明"))
+                                 .andDo(MockMvcResultHandlers.print())
+                                 .andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
         System.out.println(contentAsString);
     }
@@ -97,9 +100,13 @@ public class UserControllerMockMvcTest {
     public void updateUser() throws Exception {
         User user = new User("新小明");
         String json = JSON.toJSONString(user);
-        mvc.perform(MockMvcRequestBuilders.post("/user/update").accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(MockMvcRequestBuilders.post("/user/update")
+                                          .accept(MediaType.APPLICATION_JSON)
+                                          .contentType(MediaType.APPLICATION_JSON)
                                           .content(json.getBytes())//传json参数
-                                          .session(session)).andExpect(MockMvcResultMatchers.status().isOk()).andDo(MockMvcResultHandlers.print());
+                                          .session(session))
+           .andExpect(MockMvcResultMatchers.status().isOk())
+           .andDo(MockMvcResultHandlers.print());
     }
 
     /**
@@ -113,8 +120,12 @@ public class UserControllerMockMvcTest {
         ArrayList<Integer> ids = new ArrayList<>();
         ids.add(1);
         String json = JSON.toJSONString(ids);
-        mvc.perform(MockMvcRequestBuilders.post("/user/delete").contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)
+        mvc.perform(MockMvcRequestBuilders.post("/user/delete")
+                                          .contentType(MediaType.APPLICATION_JSON)
+                                          .accept(MediaType.APPLICATION_JSON)
                                           .content(json.getBytes())//传json参数
-                                          .session(session)).andExpect(MockMvcResultMatchers.status().isOk()).andDo(MockMvcResultHandlers.print());
+                                          .session(session))
+           .andExpect(MockMvcResultMatchers.status().isOk())
+           .andDo(MockMvcResultHandlers.print());
     }
 }
