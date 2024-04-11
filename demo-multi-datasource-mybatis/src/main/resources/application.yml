@@ -1,17 +1,97 @@
 spring:
   datasource:
+    type: com.alibaba.druid.pool.DruidDataSource  # 指定数据源类型
+    # 配置Druid监控
+    druid:
+      ########### 启用内置过滤器（第一个 stat必须，否则监控不到SQL）##########
+      filters: stat,wall,log4j2
+      # 自己配置监控统计拦截的filter
+      filter:
+        # 开启druiddatasource的状态监控
+        stat:
+          enabled: true
+          db-type: mysql
+          # 开启慢sql监控，超过2s 就认为是慢sql，记录到日志中
+          log-slow-sql: true
+          slow-sql-millis: 2000
+        # 日志监控，使用slf4j 进行日志输出
+        slf4j:
+          enabled: true
+          statement-log-error-enabled: true
+          statement-create-after-log-enabled: false
+          statement-close-after-log-enabled: false
+          result-set-open-after-log-enabled: false
+          result-set-close-after-log-enabled: false
+      ########## 配置WebStatFilter，用于采集web关联监控的数据 ##########
+      web-stat-filter:
+        enabled: true                   # 启动 StatFilter
+        url-pattern: /*                 # 过滤所有url
+        exclusions: "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*" # 排除一些不必要的url
+        session-stat-enable: true       # 开启session统计功能
+        session-stat-max-count: 1000    # session的最大个数,默认100
+      ########## 配置StatViewServlet（监控页面），用于展示Druid的统计信息 ##########
+      stat-view-servlet:
+        enabled: true                   # 启用StatViewServlet
+        url-pattern: /druid/*           # 访问内置监控页面的路径，内置监控页面的首页是/druid/index.html
+        reset-enable: false              # 不允许清空统计数据,重新计算
+
+        login-username: root            # 配置监控页面访问账户和密码
+        login-password: 3c3ea767fefe645cf4b07ad593b157dd459f7fbc39f8a270d809e27dbd7f883e             # druid 的web界面为 /druid/login.html
+        #allow: 127.0.0.1           # 允许访问的地址，如果allow没有配置或者为空，则允许所有访问
+        deny:                                        # 拒绝访问的地址，deny优先于allow，如果在deny列表中，就
     dynamic:
+      primary: master
+      strict: false
+      druid:
+        max-active: 40
+        initial-size: 5
+        min-idle: 5
+        keep-alive: true
+        max-wait: 10000
+        time-between-eviction-runs-millis: 90000
+        max-evictable-idle-time-millis: 588000
+        min-evictable-idle-time-millis: 488000
+        validation-query: SELECT 1 FROM DUAL
+        validation-query-timeout: 30000
+        wall:
+          multi-statement-allow: true
       datasource:
         master:
           username: root
           password: root
           url: jdbc:mysql://127.0.0.1:3306/spring-boot-demo?useUnicode=true&characterEncoding=UTF-8&useSSL=false&autoReconnect=true&failOverReadOnly=false&serverTimezone=GMT%2B8
           driver-class-name: com.mysql.cj.jdbc.Driver
+          druid:
+            max-active: 40
+            initial-size: 5
+            min-idle: 5
+            keep-alive: true
+            max-wait: 10000
+            time-between-eviction-runs-millis: 90000
+            max-evictable-idle-time-millis: 588000
+            min-evictable-idle-time-millis: 488000
+            validation-query: SELECT 1 FROM DUAL
+            validation-query-timeout: 30000
+            wall:
+              multi-statement-allow: true
         slave:
           username: root
           password: root
           url: jdbc:mysql://127.0.0.1:3306/spring-boot-demo-2?useUnicode=true&characterEncoding=UTF-8&useSSL=false&autoReconnect=true&failOverReadOnly=false&serverTimezone=GMT%2B8
           driver-class-name: com.mysql.cj.jdbc.Driver
+          druid:
+            max-active: 40
+            initial-size: 5
+            min-idle: 5
+            keep-alive: true
+            max-wait: 10000
+            time-between-eviction-runs-millis: 90000
+            max-evictable-idle-time-millis: 588000
+            min-evictable-idle-time-millis: 488000
+            validation-query: SELECT 1 FROM DUAL
+            validation-query-timeout: 30000
+            wall:
+              multi-statement-allow: true
       mp-enabled: true
 logging:
   level:
