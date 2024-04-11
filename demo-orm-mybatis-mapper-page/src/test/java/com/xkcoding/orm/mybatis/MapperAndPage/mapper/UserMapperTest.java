@@ -10,13 +10,14 @@ import com.xkcoding.orm.mybatis.MapperAndPage.SpringBootDemoOrmMybatisMapperPage
 import com.xkcoding.orm.mybatis.MapperAndPage.entity.User;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.util.Lists;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * <p>
@@ -38,9 +39,19 @@ public class UserMapperTest extends SpringBootDemoOrmMybatisMapperPageApplicatio
     @Test
     public void testInsert() {
         String salt = IdUtil.fastSimpleUUID();
-        User testSave3 = User.builder().name("testSave3").password(SecureUtil.md5("123456" + salt)).salt(salt).email("testSave3@xkcoding.com").phoneNumber("17300000003").status(1).lastLoginTime(new DateTime()).createTime(new DateTime()).lastUpdateTime(new DateTime()).build();
+        User testSave3 = User.builder()
+                             .name("testSave3")
+                             .password(SecureUtil.md5("123456" + salt))
+                             .salt(salt)
+                             .email("testSave3@xkcoding.com")
+                             .phoneNumber("17300000003")
+                             .status(1)
+                             .lastLoginTime(new DateTime())
+                             .createTime(new DateTime())
+                             .lastUpdateTime(new DateTime())
+                             .build();
         userMapper.insertUseGeneratedKeys(testSave3);
-        Assert.assertNotNull(testSave3.getId());
+        assertNotNull(testSave3.getId());
         log.debug("【测试主键回写#testSave3.getId()】= {}", testSave3.getId());
     }
 
@@ -52,11 +63,21 @@ public class UserMapperTest extends SpringBootDemoOrmMybatisMapperPageApplicatio
         List<User> userList = Lists.newArrayList();
         for (int i = 4; i < 14; i++) {
             String salt = IdUtil.fastSimpleUUID();
-            User user = User.builder().name("testSave" + i).password(SecureUtil.md5("123456" + salt)).salt(salt).email("testSave" + i + "@xkcoding.com").phoneNumber("1730000000" + i).status(1).lastLoginTime(new DateTime()).createTime(new DateTime()).lastUpdateTime(new DateTime()).build();
+            User user = User.builder()
+                            .name("testSave" + i)
+                            .password(SecureUtil.md5("123456" + salt))
+                            .salt(salt)
+                            .email("testSave" + i + "@xkcoding.com")
+                            .phoneNumber("1730000000" + i)
+                            .status(1)
+                            .lastLoginTime(new DateTime())
+                            .createTime(new DateTime())
+                            .lastUpdateTime(new DateTime())
+                            .build();
             userList.add(user);
         }
         int i = userMapper.insertList(userList);
-        Assert.assertEquals(userList.size(), i);
+        assertEquals(userList.size(), i);
         List<Long> ids = userList.stream().map(User::getId).collect(Collectors.toList());
         log.debug("【测试主键回写#userList.ids】= {}", ids);
     }
@@ -68,9 +89,9 @@ public class UserMapperTest extends SpringBootDemoOrmMybatisMapperPageApplicatio
     public void testDelete() {
         Long primaryKey = 1L;
         int i = userMapper.deleteByPrimaryKey(primaryKey);
-        Assert.assertEquals(1, i);
+        assertEquals(1, i);
         User user = userMapper.selectByPrimaryKey(primaryKey);
-        Assert.assertNull(user);
+        assertNull(user);
     }
 
     /**
@@ -82,10 +103,10 @@ public class UserMapperTest extends SpringBootDemoOrmMybatisMapperPageApplicatio
         User user = userMapper.selectByPrimaryKey(primaryKey);
         user.setName("通用Mapper名字更新");
         int i = userMapper.updateByPrimaryKeySelective(user);
-        Assert.assertEquals(1, i);
+        assertEquals(1, i);
         User update = userMapper.selectByPrimaryKey(primaryKey);
-        Assert.assertNotNull(update);
-        Assert.assertEquals("通用Mapper名字更新", update.getName());
+        assertNotNull(update);
+        assertEquals("通用Mapper名字更新", update.getName());
         log.debug("【update】= {}", update);
     }
 
@@ -95,7 +116,7 @@ public class UserMapperTest extends SpringBootDemoOrmMybatisMapperPageApplicatio
     @Test
     public void testQueryOne() {
         User user = userMapper.selectByPrimaryKey(1L);
-        Assert.assertNotNull(user);
+        assertNotNull(user);
         log.debug("【user】= {}", user);
     }
 
@@ -105,7 +126,7 @@ public class UserMapperTest extends SpringBootDemoOrmMybatisMapperPageApplicatio
     @Test
     public void testQueryAll() {
         List<User> users = userMapper.selectAll();
-        Assert.assertTrue(CollUtil.isNotEmpty(users));
+        assertTrue(CollUtil.isNotEmpty(users));
         log.debug("【users】= {}", users);
     }
 
@@ -122,8 +143,8 @@ public class UserMapperTest extends SpringBootDemoOrmMybatisMapperPageApplicatio
         PageHelper.startPage(currentPage, pageSize, orderBy);
         List<User> users = userMapper.selectAll();
         PageInfo<User> userPageInfo = new PageInfo<>(users);
-        Assert.assertEquals(5, userPageInfo.getSize());
-        Assert.assertEquals(count, userPageInfo.getTotal());
+        assertEquals(5, userPageInfo.getSize());
+        assertEquals(count, userPageInfo.getTotal());
         log.debug("【userPageInfo】= {}", userPageInfo);
     }
 
@@ -144,8 +165,8 @@ public class UserMapperTest extends SpringBootDemoOrmMybatisMapperPageApplicatio
         // 查询
         List<User> userList = userMapper.selectByExample(example);
         PageInfo<User> userPageInfo = new PageInfo<>(userList);
-        Assert.assertEquals(3, userPageInfo.getSize());
-        Assert.assertEquals(count, userPageInfo.getTotal());
+        assertEquals(3, userPageInfo.getSize());
+        assertEquals(count, userPageInfo.getTotal());
         log.debug("【userPageInfo】= {}", userPageInfo);
     }
 

@@ -21,6 +21,7 @@
         <hutool-all.version>5.8.20</hutool-all.version>
         <jmockdata.version>4.3.0</jmockdata.version>
         <common-random.version>1.0.21</common-random.version>
+        <vavr.version>1.0.0-alpha-4</vavr.version>
     </properties>
 
     <dependencies>
@@ -51,6 +52,12 @@
             <artifactId>common-random</artifactId>
             <version>${common-random.version}</version>
             <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.vavr</groupId>
+            <artifactId>vavr</artifactId>
+            <version>${vavr.version}</version>
         </dependency>
 
     </dependencies>
