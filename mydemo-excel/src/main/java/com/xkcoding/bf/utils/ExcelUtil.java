@@ -214,76 +214,68 @@ public class ExcelUtil {
         //文件名
         String fileName = String.valueOf(System.currentTimeMillis());
         //记录总数:实际中需要根据查询条件进行统计即可:一共多少条
-        int totalCount = 10_000;
+        long totalCount = 10_000L;
         //每一个Sheet存放100w条数据
-        Integer sheetDataRows = 5_000;
+        long sheetDataRows = 10_000L;
         //每次写入的数据量20w,每页查询20W
-        Integer writeDataRows = 5_000;
+        long writeDataRows = 5_000L;
         //计算需要的Sheet数量
-        Integer sheetNum = (totalCount - 1) / sheetDataRows + 1;
-        Integer totalPage = (totalCount - 1) / writeDataRows + 1;
+        long sheetNum = (totalCount - 1) / sheetDataRows + 1;
+        long totalPage = (totalCount - 1) / writeDataRows + 1;
         //必须放到循环外，否则会刷新流
         Page page = new Page(1, writeDataRows);
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            ExcelWriter excelWriter = EasyExcel.write(baos)
-                                               .excelType(ExcelTypeEnum.XLSX)
-                                               .registerWriteHandler(new CustomWaterMarkHandler(watermark))
-                                               .inMemory(true)
-                                               .build();
-            //开始分批查询分次写入
-            for (int i = 0; i < sheetNum; i++) {
-                //创建Sheet
-                WriteSheet sheet = new WriteSheet();
-                sheet.setSheetName("Sheet" + i);
-                sheet.setSheetNo(i);
-                //循环写入次数: j的自增条件是当不是最后一个Sheet的时候写入次数为正常的每个Sheet写入的次数,如果是最后一个就需要使用计算的次数lastSheetWriteCount
-                for (int j = ((int)(page.getCurrent())); j <= totalPage; j++) {
-                    WriteSheet writeSheet = EasyExcel.writerSheet(i, "Sheet" + (i + 1))
-                                                     .needHead(false)
-                                                     .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
-                                                     .build();
-                    excelWriter.write(new ArrayList<>(), writeSheet);
-                    if (j * writeDataRows % sheetDataRows == 0) {
-                        //记录当前页数j并加1,并跳出这个for循环,往下一个sheet页写入数据
-                        page.setCurrent(j + 1);
-                        break;
-                    }
-                }
-            }
-            excelWriter.finish();
-
-            //开始分批查询分次写入
-            page.setCurrent(1);
-            try (OutputStream rspOutputStream = response.getOutputStream()) {
-                ExcelWriter excelWriter1 = EasyExcel.write(rspOutputStream)
-                                                    .withTemplate(new ByteArrayInputStream(baos.toByteArray()))
-                                                    .excelType(ExcelTypeEnum.XLSX)
-                                                    .build();
+            try (ExcelWriter tmpWaterMarkExcelWriter = EasyExcel.write(baos)
+                                                                .excelType(ExcelTypeEnum.XLSX)
+                                                                .registerWriteHandler(new CustomWaterMarkHandler(
+                                                                    watermark))
+                                                                .inMemory(true)
+                                                                .build()) {
+                //开始分批查询分次写入
                 for (int i = 0; i < sheetNum; i++) {
                     //创建Sheet
                     WriteSheet sheet = new WriteSheet();
                     sheet.setSheetName("Sheet" + i);
                     sheet.setSheetNo(i);
-                    //循环写入次数: j的自增条件是当不是最后一个Sheet的时候写入次数为正常的每个Sheet写入的次数,如果是最后一个就需要使用计算的次数lastSheetWriteCount
-                    for (int j = ((int)(page.getCurrent())); j <= totalPage; j++) {
-                        List<T> list = func.apply(page);
+                    WriteSheet writeSheet = EasyExcel.writerSheet(i, "Sheet" + (i + 1))
+                                                     .needHead(false)
+                                                     .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
+                                                     .build();
+                    tmpWaterMarkExcelWriter.write(new ArrayList<>(), writeSheet);
+                }
+            }
+            //开始分批查询分次写入
+            page.setCurrent(1);
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            response.setCharacterEncoding("utf-8");
+            String encodeFileName = URLEncoder.encode(fileName + DateUtil.format(new Date(), "yyyyMMddHHmmss"));
+            response.setHeader("Content-disposition", "attachment;filename=" + encodeFileName + ".xlsx");
+            try (OutputStream rspOutputStream = response.getOutputStream()) {
+                try (ExcelWriter excelWriter = EasyExcel.write(rspOutputStream)
+                                                        .withTemplate(new ByteArrayInputStream(baos.toByteArray()))
+                                                        .excelType(ExcelTypeEnum.XLSX)
+                                                        .build()) {
+                    for (int i = 0; i < sheetNum; i++) {
+                        //创建Sheet
+                        WriteSheet sheet = new WriteSheet();
+                        sheet.setSheetName("Sheet" + i);
+                        sheet.setSheetNo(i);
                         WriteSheet writeSheet = EasyExcel.writerSheet(i, "Sheet" + (i + 1))
                                                          .head(clazz)
                                                          .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
                                                          .build();
-                        excelWriter1.write(list, writeSheet);
-                        if (j * writeDataRows % sheetDataRows == 0) {
-                            //记录当前页数j并加1,并跳出这个for循环,往下一个sheet页写入数据
-                            page.setCurrent(j + 1);
-                            break;
+                        //循环写入次数: j的自增条件是当不是最后一个Sheet的时候写入次数为正常的每个Sheet写入的次数,如果是最后一个就需要使用计算的次数lastSheetWriteCount
+                        for (int j = ((int)(page.getCurrent())); j <= totalPage; j++) {
+                            List<T> list = func.apply(page);
+                            excelWriter.write(list, writeSheet);
+                            if (j * writeDataRows % sheetDataRows == 0) {
+                                //记录当前页数j并加1,并跳出这个for循环,往下一个sheet页写入数据
+                                page.setCurrent(j + 1);
+                                break;
+                            }
                         }
                     }
                 }
-                // 下载EXCEL，返回给前段stream流
-                response.setContentType("application/octet-stream");
-                response.setCharacterEncoding("utf-8");
-                response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
-                excelWriter1.finish();
             }
         } catch (Exception e) {
             e.printStackTrace();
