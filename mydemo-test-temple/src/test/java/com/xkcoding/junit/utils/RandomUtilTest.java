@@ -1,9 +1,9 @@
-package com.xkcoding.utils;
+package com.xkcoding.junit.utils;
 
 import com.github.javafaker.Color;
 import com.github.javafaker.Faker;
 import com.github.javafaker.University;
-import com.xkcoding.component.User;
+import com.xkcoding.junit.component.User;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

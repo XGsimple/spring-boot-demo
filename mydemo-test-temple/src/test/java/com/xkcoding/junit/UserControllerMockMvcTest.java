@@ -1,9 +1,9 @@
-package com.xkcoding;
+package com.xkcoding.junit;
 
 import com.alibaba.fastjson.JSON;
-import com.xkcoding.component.User;
-import com.xkcoding.dao.UserDao;
-import com.xkcoding.service.UserServiceImpl;
+import com.xkcoding.junit.component.User;
+import com.xkcoding.junit.dao.OrmUserDao;
+import com.xkcoding.junit.service.impl.OrmUserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,11 +36,11 @@ public class UserControllerMockMvcTest extends AbstractMvcTest {
 
     //MockBean注解将Mock对象添加到Spring上下文中,替换Spring上下文中任何相同类型的现有bean，如果没有定义相同类型的bean，将添加一个新的bean
     @MockBean
-    private UserDao userDao;
+    private OrmUserDao userDao;
 
     //将Mock对象userDao注入
     @InjectMocks
-    private UserServiceImpl userService;
+    private OrmUserServiceImpl userService;
 
     @BeforeEach
     public void setupMockMvc() {

@@ -1,6 +1,6 @@
-package com.xkcoding.config;
+package com.xkcoding.junit.config;
 
-import com.xkcoding.component.Apple;
+import com.xkcoding.junit.component.Apple;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;

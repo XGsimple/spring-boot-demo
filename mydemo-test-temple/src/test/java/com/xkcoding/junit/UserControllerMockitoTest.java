@@ -1,9 +1,9 @@
-package com.xkcoding;
+package com.xkcoding.junit;
 
-import com.xkcoding.component.R;
-import com.xkcoding.component.User;
-import com.xkcoding.controller.UserController;
-import com.xkcoding.service.UserServiceImpl;
+import com.xkcoding.junit.component.R;
+import com.xkcoding.junit.controller.OrmUserController;
+import com.xkcoding.junit.entity.OrmUser;
+import com.xkcoding.junit.service.OrmUserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,10 +27,10 @@ import static org.mockito.Mockito.when;
 @ExtendWith(SpringExtension.class)
 public class UserControllerMockitoTest {
     @MockBean
-    private UserServiceImpl userService;
+    private OrmUserService userService;
 
     @InjectMocks
-    private UserController userController;
+    private OrmUserController userController;
 
     /**
      * 新增用户测试用例
@@ -40,10 +40,11 @@ public class UserControllerMockitoTest {
     @Test
     @DisplayName("新增用户测试用例")
     public void saveUser() throws Exception {
-        when(userService.saveUser(new User("小明"))).thenReturn(1);
-        R res = userController.saveUser(new User("小明"));
+        OrmUser ormUser = new OrmUser();
+        ormUser.setName("小明");
+        when(userService.save(ormUser)).thenReturn(true);
+        R res = userController.saveUser(ormUser);
         assertThat(res).isEqualTo(R.ok());
-
     }
 
 }

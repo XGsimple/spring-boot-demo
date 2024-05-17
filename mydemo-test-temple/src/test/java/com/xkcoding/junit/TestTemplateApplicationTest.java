@@ -1,4 +1,4 @@
-package com.xkcoding;
+package com.xkcoding.junit;
 
 import org.junit.jupiter.api.Test;
 
@@ -7,14 +7,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Unit test for simple App.
  */
-public class TestTemplateApplicationTest
-{
+public class TestTemplateApplicationTest {
     /**
      * Rigorous Test :-)
      */
     @Test
-    public void shouldAnswerWithTrue()
-    {
-        assertTrue( true );
+    public void shouldAnswerWithTrue() {
+        assertTrue(true);
     }
 }

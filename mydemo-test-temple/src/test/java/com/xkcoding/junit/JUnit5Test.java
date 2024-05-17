@@ -1,6 +1,6 @@
-package com.xkcoding;
+package com.xkcoding.junit;
 
-import com.xkcoding.component.Person;
+import com.xkcoding.junit.component.Person;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
@@ -93,6 +93,7 @@ public class JUnit5Test {
         when(mockedList.get(anyInt())).thenReturn("element");
         // Stubbing using custom matcher (let's say isValid() returns your own matcher implementation):
         when(mockedList.contains(argThat((String ele) -> ele.startsWith("s")))).thenReturn(false);
+        mockedList.add("123456");
         // Following prints "element"
         System.out.println(mockedList.get(999));
         System.out.println(mockedList.contains("start"));
@@ -209,11 +210,14 @@ public class JUnit5Test {
         List list = new LinkedList();
         List spy = spy(list);
         // Impossible: real method is called so spy.get(0) throws IndexOutOfBoundsException (the list is yet empty)
+        //使用when方式时，spy.get(0)报错，导致后续mock无法进行，有点类似于切面的after方法
         //when(spy.get(0)).thenReturn("foo");
-        // You have to use doReturn() for stubbing
-        //when(spy.get(0)).thenReturn("ss");
-        doReturn("foo").when(spy).get(0);
-
+        //使用doReturn方式时，spy.get(0)正常，后续mock正常
+        //doReturn("foo").when(spy).get(0);
+        //或者Answer
+        doAnswer((Answer)invocation -> {
+            return "foo";
+        }).when(spy).get(0);
         Object o = spy.get(0);
         System.out.println(o);
     }
@@ -371,27 +375,44 @@ public class JUnit5Test {
          */
         @Test
         public void test_array_object_contains() {
-            Person[] names = {
-                new Person("William", 34), new Person("John", 36), new Person("Tommy", 28), new Person("Lily", 32)};
+            Person[] names = {new Person("William", 34), new Person("John", 36), new Person("Tommy", 28),
+                              new Person("Lily", 32)};
 
             assertThat(names).extracting(Person::getName).containsExactly("William", "John", "Tommy", "Lily");
 
-            assertThat(names).extracting("name", "age").containsExactly(tuple("William", 34), tuple("John", 36), tuple("Tommy", 28), tuple("Lily", 32));
+            assertThat(names).extracting("name", "age")
+                             .containsExactly(tuple("William", 34),
+                                              tuple("John", 36),
+                                              tuple("Tommy", 28),
+                                              tuple("Lily", 32));
 
             assertThat(names).extracting(x -> x.getName(), x -> x.getAge())
-                             .containsExactly(tuple("William", 34), tuple("John", 36), tuple("Tommy", 28), tuple("Lily", 32));
+                             .containsExactly(tuple("William", 34),
+                                              tuple("John", 36),
+                                              tuple("Tommy", 28),
+                                              tuple("Lily", 32));
         }
 
         @Test
         public void test_list_contains() {
-            List<Person> names = Arrays.asList(new Person("William", 34), new Person("John", 36), new Person("Tommy", 28), new Person("Lily", 32));
+            List<Person> names = Arrays.asList(new Person("William", 34),
+                                               new Person("John", 36),
+                                               new Person("Tommy", 28),
+                                               new Person("Lily", 32));
 
             assertThat(names).extracting(Person::getName).containsExactly("William", "John", "Tommy", "Lily");
 
-            assertThat(names).extracting("name", "age").containsExactly(tuple("William", 34), tuple("John", 36), tuple("Tommy", 28), tuple("Lily", 32));
+            assertThat(names).extracting("name", "age")
+                             .containsExactly(tuple("William", 34),
+                                              tuple("John", 36),
+                                              tuple("Tommy", 28),
+                                              tuple("Lily", 32));
 
             assertThat(names).extracting(x -> x.getName(), x -> x.getAge())
-                             .containsExactly(tuple("William", 34), tuple("John", 36), tuple("Tommy", 28), tuple("Lily", 32));
+                             .containsExactly(tuple("William", 34),
+                                              tuple("John", 36),
+                                              tuple("Tommy", 28),
+                                              tuple("Lily", 32));
         }
 
         /**
@@ -502,10 +523,10 @@ public class JUnit5Test {
          * @ValueSource: 为参数化测试指定入参来源，支持八大基础类以及String类型,Class类型
          * @NullSource: 表示为参数化测试提供一个null的入参
          * @EnumSource: 表示为参数化测试提供一个枚举入参
-         * @CsvSource：表示读取CSV格式内容作为参数化测试入参
-         * @CsvFileSource：表示读取指定CSV文件内容作为参数化测试入参
-         * @MethodSource：表示读取指定方法的返回值作为参数化测试入参(注意方法返回需要是一个流)
-         * @ArgumentsSource：指定一个自定义的，可重用的ArgumentsProvider。
+         * @CsvSource： 表示读取CSV格式内容作为参数化测试入参
+         * @CsvFileSource： 表示读取指定CSV文件内容作为参数化测试入参
+         * @MethodSource： 表示读取指定方法的返回值作为参数化测试入参(注意方法返回需要是一个流)
+         * @ArgumentsSource： 指定一个自定义的，可重用的ArgumentsProvider。
          */
         //参数测试
         @ParameterizedTest

@@ -1,4 +1,4 @@
-package com.xkcoding.utils;
+package com.xkcoding.junit.utils;
 
 import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
@@ -97,7 +97,8 @@ public class RandomUtil {
     private static class BigDecimalRandomizer implements Randomizer<BigDecimal> {
         @Override
         public BigDecimal getRandomValue() {
-            return BigDecimal.valueOf(nextDouble(Integer.MIN_VALUE, Integer.MAX_VALUE)).setScale(5, BigDecimal.ROUND_HALF_UP);
+            return BigDecimal.valueOf(nextDouble(Integer.MIN_VALUE, Integer.MAX_VALUE))
+                             .setScale(5, BigDecimal.ROUND_HALF_UP);
         }
     }
 }

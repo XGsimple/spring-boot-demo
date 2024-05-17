@@ -1,7 +1,7 @@
-package com.xkcoding;
+package com.xkcoding.junit;
 
-import com.xkcoding.component.Apple;
-import com.xkcoding.config.ProfileConfig;
+import com.xkcoding.junit.component.Apple;
+import com.xkcoding.junit.config.ProfileConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

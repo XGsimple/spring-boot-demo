@@ -1,4 +1,4 @@
-package com.xkcoding.component;
+package com.xkcoding.junit.component;
 
 /**
  * @author xugangq
@@ -23,6 +23,7 @@ public class Apple {
 
     /**
      * 覆盖finalize，在回收的时候会执行。
+     *
      * @throws Throwable
      */
     @Override
@@ -33,8 +34,6 @@ public class Apple {
 
     @Override
     public String toString() {
-        return "Apple{" +
-                "name='" + name + '\'' +
-                '}' + ", hashCode:" + this.hashCode();
+        return "Apple{" + "name='" + name + '\'' + '}' + ", hashCode:" + this.hashCode();
     }
 }

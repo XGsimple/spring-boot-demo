@@ -1,7 +1,7 @@
-package com.xkcoding;
+package com.xkcoding.junit;
 
-import com.xkcoding.component.User;
-import com.xkcoding.dao.UserDao;
+import com.xkcoding.junit.component.User;
+import com.xkcoding.junit.dao.OrmUserDao;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)//包含了 @ExtendWith(SpringExtension.class)
 public class UserControllerRestTemplTest {
     @MockBean
-    private UserDao userDao;
+    private OrmUserDao userDao;
 
     @Autowired
     private TestRestTemplate restTemplate;
@@ -62,7 +62,8 @@ public class UserControllerRestTemplTest {
         public RestTemplateBuilder restTemplateBuilder() {
             //            return new RestTemplateBuilder().rootUri("http://localhost:8080/").setConnectTimeout(Duration.ofMillis(1000))
             //                                            .setReadTimeout(Duration.ofMillis(1000)).basicAuthentication(userName, password);
-            return new RestTemplateBuilder().setConnectTimeout(Duration.ofMillis(1000)).setReadTimeout(Duration.ofMillis(1000));
+            return new RestTemplateBuilder().setConnectTimeout(Duration.ofMillis(1000))
+                                            .setReadTimeout(Duration.ofMillis(1000));
         }
     }
 

@@ -1,6 +1,6 @@
-package com.xkcoding;
+package com.xkcoding.junit;
 
-import com.xkcoding.component.Intent;
+import com.xkcoding.junit.component.Intent;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;

@@ -1,4 +1,4 @@
-package com.xkcoding;
+package com.xkcoding.junit;
 
 import com.alibaba.fastjson.JSON;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package com.xkcoding.component;
+package com.xkcoding.junit.component;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
