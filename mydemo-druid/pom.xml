@@ -9,7 +9,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>mydemo-druid</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>druid</name>
+    <name>mydemo-druid</name>
     <description>Demo project for Spring Boot</description>
 
     <properties>
