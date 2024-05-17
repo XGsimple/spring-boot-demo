@@ -1,23 +1,22 @@
-package com.xkcoding.controller;
+package com.xkcoding.junit.controller;
 
-import com.xkcoding.component.R;
-import com.xkcoding.component.User;
-import com.xkcoding.service.UserServiceImpl;
-import lombok.extern.slf4j.Slf4j;
+import com.xkcoding.junit.component.R;
+import com.xkcoding.junit.entity.OrmUser;
+import com.xkcoding.junit.service.OrmUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * @author MintLemon
- * @description
- * @createTime 2021-08-01 21:09
+ * Spring Boot Demo Orm 系列示例表(OrmUser)表控制层
+ *
+ * @author makejava
+ * @since 2024-05-17 17:11:47
  */
-@Slf4j
 @RestController
 @RequestMapping("/user")
-public class UserController {
+public class OrmUserController {
     @Autowired
-    private UserServiceImpl userService;
+    private OrmUserService userService;
 
     /**
      * 获取用户
@@ -26,7 +25,7 @@ public class UserController {
      */
     @GetMapping("/query/{id}")
     public R queryUser(@PathVariable(value = "id") Integer id) {
-        User user = userService.queryUserById(id);
+        OrmUser user = userService.getById(id);
         return R.ok().put("user", user);
     }
 
@@ -36,8 +35,8 @@ public class UserController {
      * @param user
      */
     @PostMapping("/save")
-    public R saveUser(@RequestBody User user) {
-        userService.saveUser(user);
+    public R saveUser(@RequestBody OrmUser user) {
+        userService.save(user);
         return R.ok();
     }
 
@@ -47,8 +46,8 @@ public class UserController {
      * @param user
      */
     @PostMapping("/update")
-    public R updateUser(@RequestBody User user) {
-        userService.updateUser(user);
+    public R updateUser(@RequestBody OrmUser user) {
+        userService.updateById(user);
         return R.ok();
     }
 
@@ -59,7 +58,8 @@ public class UserController {
      */
     @PostMapping("/remove")
     public R removeBatch(@RequestBody Integer[] ids) {
-        userService.removeBatch(ids);
+        userService.removeById(ids);
         return R.ok();
     }
 }
+
