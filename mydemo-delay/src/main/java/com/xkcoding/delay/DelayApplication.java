@@ -1,4 +1,4 @@
-package com.xkcoding.bf;
+package com.xkcoding.delay;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

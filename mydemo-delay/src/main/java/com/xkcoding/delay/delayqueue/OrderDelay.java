@@ -1,4 +1,4 @@
-package com.xkcoding.bf.delayqueue;
+package com.xkcoding.delay.delayqueue;
 
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;

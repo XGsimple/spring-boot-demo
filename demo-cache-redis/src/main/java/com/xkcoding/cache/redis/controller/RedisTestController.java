@@ -1,7 +1,8 @@
-package com.xkcoding.cache.redis.lock;
+package com.xkcoding.cache.redis.controller;
 
 import cn.hutool.core.lang.Snowflake;
 import cn.hutool.core.util.IdUtil;
+import com.xkcoding.cache.redis.lock.RedisLock;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,9 +21,9 @@ import java.util.concurrent.Executors;
 @Slf4j
 @RestController
 @RequestMapping("/test")
-public class RedisTest {
+public class RedisTestController {
     @Autowired
-    RedisLock redisLock;
+    private RedisLock redisLock;
     int count = 0;
 
     @GetMapping("/redislock")

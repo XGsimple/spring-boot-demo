@@ -1,4 +1,4 @@
-package com.xkcoding.bf.redis;
+package com.xkcoding.delay.redis;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

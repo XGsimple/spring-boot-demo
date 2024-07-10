@@ -233,7 +233,8 @@ class HotelSearchTest {
 
     @BeforeEach
     void setUp() {
-        client = new RestHighLevelClient(RestClient.builder(HttpHost.create("http://192.168.3.137:31364")));
+        client = new RestHighLevelClient(RestClient.builder(HttpHost.create("http://192.168.3.137:31364"),
+                                                            HttpHost.create("http://192.168.3.138:31364")));
     }
 
     @AfterEach
