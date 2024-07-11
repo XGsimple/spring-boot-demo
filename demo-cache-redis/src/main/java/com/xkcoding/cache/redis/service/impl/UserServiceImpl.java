@@ -2,6 +2,7 @@ package com.xkcoding.cache.redis.service.impl;
 
 import cn.hutool.core.util.StrUtil;
 import com.google.common.collect.Maps;
+import com.xkcoding.cache.redis.component.CacheExpire;
 import com.xkcoding.cache.redis.entity.User;
 import com.xkcoding.cache.redis.service.RedisService;
 import com.xkcoding.cache.redis.service.UserService;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -62,7 +64,8 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
-    @Caching(put = {@CachePut(value = "user", key = "#user.id")}, evict = {@CacheEvict(value = "user", key = "#user.id", beforeInvocation = true)})
+    @Caching(put = {@CachePut(value = "user", key = "#user.id")},
+             evict = {@CacheEvict(value = "user", key = "#user.id", beforeInvocation = true)})
     @Override
     public User doubleWtrite(User user) {
         DATABASES.put(user.getId(), user);
@@ -81,7 +84,8 @@ public class UserServiceImpl implements UserService {
      * @return 返回结果
      */
     //@Cacheable(cacheNames = "user", key = "#id", condition = "#id > 1", sync = true)
-    @Cacheable(cacheNames = "user", keyGenerator = "myKeyGenerator", condition = "#id > 0", sync = false)
+    @CacheExpire(ttl = 30, unit = TimeUnit.MINUTES)
+    @Cacheable(cacheNames = "user", keyGenerator = "defaultCacheKeyGenerator", condition = "#id > 0", sync = false)
     @Override
     public User get(Long id) {
         // 我们假设从数据库读取

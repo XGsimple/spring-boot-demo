@@ -3,12 +3,17 @@ package com.xkcoding.cache.redis.config;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.xkcoding.cache.redis.component.MyKeyGenerator;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.xkcoding.cache.redis.component.DefaultCacheKeyGenerator;
+import com.xkcoding.cache.redis.component.JsonConverters;
+import com.xkcoding.cache.redis.component.RedisExpireCacheResolver;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.interceptor.CacheResolver;
 import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +29,8 @@ import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -100,10 +107,14 @@ public class RedisConfig extends CachingConfigurerSupport {
         RedisCacheWriter redisCacheWriter = RedisCacheWriter.nonLockingRedisCacheWriter(redisConnectionFactory);
         //设置Redis缓存有效期为1天
         RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
-                                                                                 .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(
-                                                                                     new StringRedisSerializer()))
-                                                                                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(
-                                                                                     redisSerializer()))
+                                                                                 .serializeKeysWith(
+                                                                                     RedisSerializationContext.SerializationPair.fromSerializer(
+                                                                                         new StringRedisSerializer()))
+                                                                                 .serializeValuesWith(
+                                                                                     RedisSerializationContext.SerializationPair.fromSerializer(
+                                                                                         redisSerializer()))
+                                                                                 //变双冒号为单冒号
+                                                                                 .computePrefixWith(name -> name + ":")
                                                                                  .entryTtl(Duration.ofDays(1));
         return new RedisCacheManager(redisCacheWriter, redisCacheConfiguration);
     }
@@ -115,12 +126,36 @@ public class RedisConfig extends CachingConfigurerSupport {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
         objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
+        //添加时间日期格式的处理
+        JavaTimeModule javaTimeModule = new JavaTimeModule();
+        // 添加对自定义日期类型解析的解析器
+        javaTimeModule.addSerializer(LocalDateTime.class, JsonConverters.localDateTimeSerializer());
+        javaTimeModule.addDeserializer(LocalDateTime.class, JsonConverters.localDateTimeDeserializer());
+        javaTimeModule.addSerializer(LocalDate.class, JsonConverters.localDateSerializer());
+        javaTimeModule.addDeserializer(LocalDate.class, JsonConverters.localDateDeserializer());
+        objectMapper.registerModule(javaTimeModule);
         serializer.setObjectMapper(objectMapper);
         return serializer;
     }
 
+    /**
+     * spring cache 自定义key 生成器
+     *
+     * @return
+     */
     @Bean
-    public KeyGenerator myKeyGenerator() {
-        return new MyKeyGenerator();
+    public KeyGenerator defaultCacheKeyGenerator() {
+        return new DefaultCacheKeyGenerator();
+    }
+
+    /**
+     * 注册自定义的缓存处理类
+     * cacheManager 为使用的缓存管理器
+     * 使用CacheResolver来接收，它属于父接口类
+     * 使用方式，指明处理器: @Cacheable(cacheNames = "yyyy",key = "#root.args[0]",cacheResolver = "redisExpireCacheResolver")
+     */
+    @Bean
+    public CacheResolver redisExpireCacheResolver(CacheManager cacheManager) {
+        return new RedisExpireCacheResolver(cacheManager);
     }
 }
