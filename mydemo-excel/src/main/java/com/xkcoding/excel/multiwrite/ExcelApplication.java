@@ -1,10 +1,10 @@
-package com.xkcoding.excel;
+package com.xkcoding.excel.multiwrite;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * https://mp.weixin.qq.com/s/AWw19E8iWZnrx-SDgWN4bQ
+ * EasyExcel 导出示例
  */
 @SpringBootApplication
 public class ExcelApplication {
