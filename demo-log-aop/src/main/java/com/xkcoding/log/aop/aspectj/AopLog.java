@@ -58,7 +58,7 @@ public class AopLog {
     public Object aroundLog(ProceedingJoinPoint point) throws Throwable {
 
         // 开始打印请求日志
-        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        ServletRequestAttributes attributes = (ServletRequestAttributes)RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = Objects.requireNonNull(attributes).getRequest();
 
         // 打印请求相关参数
@@ -68,19 +68,21 @@ public class AopLog {
         UserAgent userAgent = UserAgent.parseUserAgentString(header);
 
         final Log l = Log.builder()
-            .threadId(Long.toString(Thread.currentThread().getId()))
-            .threadName(Thread.currentThread().getName())
-            .ip(getIp(request))
-            .url(request.getRequestURL().toString())
-            .classMethod(String.format("%s.%s", point.getSignature().getDeclaringTypeName(),
-                point.getSignature().getName()))
-            .httpMethod(request.getMethod())
-            .requestParams(getNameAndValue(point))
-            .result(result)
-            .timeCost(System.currentTimeMillis() - startTime)
-            .userAgent(header)
-            .browser(userAgent.getBrowser().toString())
-            .os(userAgent.getOperatingSystem().toString()).build();
+                         .threadId(Long.toString(Thread.currentThread().getId()))
+                         .threadName(Thread.currentThread().getName())
+                         .ip(getIp(request))
+                         .url(request.getRequestURL().toString())
+                         .classMethod(String.format("%s.%s",
+                                                    point.getSignature().getDeclaringTypeName(),
+                                                    point.getSignature().getName()))
+                         .httpMethod(request.getMethod())
+                         .requestParams(getNameAndValue(point))
+                         .result(result)
+                         .timeCost(System.currentTimeMillis() - startTime)
+                         .userAgent(header)
+                         .browser(userAgent.getBrowser().toString())
+                         .os(userAgent.getOperatingSystem().toString())
+                         .build();
 
         log.info("Request Log Info : {}", JSONUtil.toJsonStr(l));
 
@@ -88,14 +90,15 @@ public class AopLog {
     }
 
     /**
-     *  获取方法参数名和参数值
+     * 获取方法参数名和参数值
+     *
      * @param joinPoint
      * @return
      */
     private Map<String, Object> getNameAndValue(ProceedingJoinPoint joinPoint) {
 
         final Signature signature = joinPoint.getSignature();
-        MethodSignature methodSignature = (MethodSignature) signature;
+        MethodSignature methodSignature = (MethodSignature)signature;
         final String[] names = methodSignature.getParameterNames();
         final Object[] args = joinPoint.getArgs();
 
