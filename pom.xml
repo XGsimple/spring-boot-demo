@@ -83,6 +83,7 @@
         <module>mydemo-test-temple</module>
         <module>mydemo-delay</module>
         <module>mydemo-excel</module>
+        <module>demo-drools</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -109,7 +110,7 @@
         <protostuff.version>1.3.0</protostuff.version>
         <protostuff.version>1.3.0</protostuff.version>
         <xkcoding.common.version>1.0.0-SNAPSHOT</xkcoding.common.version>
-
+        <drools.version>7.57.0.Final</drools.version>
     </properties>
 
     <repositories>
@@ -128,6 +129,13 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-bom</artifactId>
+                <version>${drools.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <dependency>
                 <groupId>com.xkcoding</groupId>
                 <artifactId>common</artifactId>

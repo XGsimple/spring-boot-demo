@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<kmodule xmlns="http://www.drools.org/xsd/kmodule">
+
+    <kbase name="decisionTable" packages="rules.senior.dt">
+        <ksession name="decisionTable"/>
+    </kbase>
+
+    <kbase name="dsl" packages="rules.senior.dsl">
+        <ksession name="dsl"/>
+    </kbase>
+
+    <kbase name="drt" packages="rules.senior.drt">
+        <ruleTemplate dtable="rules/senior/drt/PersonData.xlsx" template="rules/senior/drt/person.drt" row="3" col="2"/>
+        <ksession name="drt"/>
+    </kbase>
+
+</kmodule>

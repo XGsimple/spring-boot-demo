@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.data.redis.serializer.RedisSerializer;
-import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
@@ -25,8 +24,8 @@ public class RedisLock implements IRedisLockService {
 
     private RedisTemplate<String, String> redisTemplate;
 
-    private RedisScript lockRedisScript;
-    private RedisScript unLockRedisScript;
+    private RedisScript<String> lockRedisScript;
+    private RedisScript<String> unLockRedisScript;
 
     private RedisSerializer<String> argsSerializer;
     private RedisSerializer<String> resultSerializer;
@@ -36,9 +35,8 @@ public class RedisLock implements IRedisLockService {
      */
     public void init(RedisTemplate<String, String> redisTemplate) {
         this.redisTemplate = redisTemplate;
-
-        argsSerializer = new StringRedisSerializer();
-        resultSerializer = new StringRedisSerializer();
+        argsSerializer = RedisSerializer.string();
+        resultSerializer = RedisSerializer.string();
 
         lockRedisScript = RedisScript.of(LOCK_LUA, String.class);
         unLockRedisScript = RedisScript.of(UNLOCK_LUA, String.class);
@@ -56,8 +54,13 @@ public class RedisLock implements IRedisLockService {
         int tryCount = 5;
         //重试
         while (!locked && tryCount > 0) {
-            String flag = redisTemplate.execute(lockRedisScript, argsSerializer, resultSerializer, keys, val, String.valueOf(second));
-            locked = Boolean.valueOf(flag);
+            String flag = redisTemplate.execute(lockRedisScript,
+                                                argsSerializer,
+                                                resultSerializer,
+                                                keys,
+                                                val,
+                                                String.valueOf(second));
+            locked = Boolean.parseBoolean(flag);
             tryCount--;
             try {
                 Thread.sleep(300);
