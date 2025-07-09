@@ -6,7 +6,7 @@ import org.drools.core.base.RuleNameEqualsAgendaFilter;
 import org.drools.decisiontable.InputType;
 import org.drools.decisiontable.SpreadsheetCompiler;
 import org.drools.template.ObjectDataCompiler;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.kie.api.io.Resource;
 import org.kie.api.io.ResourceType;
 import org.kie.api.runtime.KieSession;
@@ -16,7 +16,7 @@ import org.kie.internal.utils.KieHelper;
 import java.io.IOException;
 import java.util.Collections;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * KieHelper单元测试
@@ -43,7 +43,7 @@ public class KieHelpTest {
 
         Person person = Person.builder().name("LeifChen").age(18).build();
         kieSession.insert(person);
-        assertEquals(1, kieSession.fireAllRules());
+        assertThat(kieSession.fireAllRules()).isEqualTo(1);
         kieSession.dispose();
     }
 
@@ -60,7 +60,7 @@ public class KieHelpTest {
 
         Person person = Person.builder().name("LeifChen").age(18).build();
         kieSession.insert(person);
-        assertEquals(1, kieSession.fireAllRules(new RuleNameEqualsAgendaFilter("test002")));
+        assertThat(kieSession.fireAllRules(new RuleNameEqualsAgendaFilter("test002"))).isEqualTo(1);
         kieSession.dispose();
     }
 
@@ -85,7 +85,7 @@ public class KieHelpTest {
         KieSession kieSession = kieHelper.build().newKieSession();
         Person person = Person.builder().name("张三").age(30).build();
         kieSession.insert(person);
-        assertEquals(1, kieSession.fireAllRules());
+        assertThat(kieSession.fireAllRules()).isEqualTo(1);
         kieSession.dispose();
     }
 
@@ -111,7 +111,7 @@ public class KieHelpTest {
         KieSession kieSession = kieHelper.build().newKieSession();
         Person person = Person.builder().name("LeifChen").age(18).build();
         kieSession.insert(person);
-        assertEquals(1, kieSession.fireAllRules());
+        assertThat(kieSession.fireAllRules()).isEqualTo(1);
         kieSession.dispose();
     }
 }

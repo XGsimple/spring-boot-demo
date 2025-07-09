@@ -5,22 +5,22 @@ import com.xkcoding.drools.bean.School;
 import lombok.extern.slf4j.Slf4j;
 import org.drools.core.base.RuleNameEqualsAgendaFilter;
 import org.drools.core.base.RuleNameStartsWithAgendaFilter;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.kie.api.KieBase;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.QueryResults;
 import org.kie.api.runtime.rule.QueryResultsRow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * 中级语法单元测试
@@ -29,28 +29,28 @@ import static org.junit.Assert.assertEquals;
  * @Author LeifChen
  * @Date 2021-09-02
  */
-@RunWith(SpringRunner.class)
-@SpringBootTest
 @Slf4j
+@SpringBootTest
+@ExtendWith(SpringExtension.class)
 public class AdvanceTest {
 
     @Autowired
     private KieBase kieBase;
     private KieSession kieSession;
 
-    @Before
+    @BeforeEach
     public void before() {
         kieSession = kieBase.newKieSession();
     }
 
-    @After
+    @AfterEach
     public void after() {
         kieSession.dispose();
     }
 
     @Test
     public void testFunction() {
-        assertEquals(1, kieSession.fireAllRules(new RuleNameEqualsAgendaFilter("testFunction")));
+        assertThat(1).isEqualTo(kieSession.fireAllRules(new RuleNameEqualsAgendaFilter("testFunction")));
     }
 
     @Test
@@ -64,13 +64,13 @@ public class AdvanceTest {
             Person person = (Person)result.get("person");
             log.info("符合查询条件的对象：{}", person);
         }
-        assertEquals(1, kieSession.fireAllRules(new RuleNameEqualsAgendaFilter("testQuery")));
-        assertEquals(1, results.size());
+        assertThat(kieSession.fireAllRules(new RuleNameEqualsAgendaFilter("testQuery"))).isEqualTo(1);
+        assertThat(results.size()).isEqualTo(1);
     }
 
     @Test
     public void testDeclare() {
-        assertEquals(2, kieSession.fireAllRules(new RuleNameStartsWithAgendaFilter("testDeclare")));
+        assertThat(kieSession.fireAllRules(new RuleNameStartsWithAgendaFilter("testDeclare"))).isEqualTo(2);
     }
 
     @Test
@@ -82,15 +82,15 @@ public class AdvanceTest {
         kieSession.setGlobal("school", school);
         kieSession.setGlobal("list", new ArrayList<>());
 
-        assertEquals(2, kieSession.fireAllRules(new RuleNameStartsWithAgendaFilter("testGlobal")));
+        assertThat(kieSession.fireAllRules(new RuleNameStartsWithAgendaFilter("testGlobal"))).isEqualTo(2);
 
         // 执行规则后的global全局变量
         int updateCount = (int)kieSession.getGlobal("count");
         School updateSchool = (School)kieSession.getGlobal("school");
         List updateList = (List)kieSession.getGlobal("list");
 
-        assertEquals(10, updateCount);
-        assertEquals("S1", updateSchool.getCode());
-        assertEquals(2, updateList.size());
+        assertThat(updateCount).isEqualTo(10);
+        assertThat(updateSchool.getCode()).isEqualTo("S1");
+        assertThat(updateList.size()).isEqualTo(2);
     }
 }

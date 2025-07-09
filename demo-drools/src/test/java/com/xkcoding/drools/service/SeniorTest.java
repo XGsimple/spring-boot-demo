@@ -4,19 +4,22 @@ import com.xkcoding.drools.bean.Person;
 import lombok.extern.slf4j.Slf4j;
 import org.drools.decisiontable.InputType;
 import org.drools.decisiontable.SpreadsheetCompiler;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * 高级语法单元测试
@@ -26,18 +29,20 @@ import static org.junit.Assert.assertEquals;
  * @Date 2021-09-06
  */
 @Slf4j
+@SpringBootTest
+@ExtendWith(SpringExtension.class)
 public class SeniorTest {
 
     private KieContainer kieContainer;
     private KieSession kieSession;
 
-    @Before
+    @BeforeEach
     public void before() {
         KieServices kss = KieServices.get();
         kieContainer = kss.getKieClasspathContainer();
     }
 
-    @After
+    @AfterEach
     public void after() {
         if (kieSession != null) {
             kieSession.dispose();
@@ -67,7 +72,7 @@ public class SeniorTest {
         kieSession = kieContainer.newKieSession("decisionTable");
         Person person = Person.builder().name("张三").age(30).build();
         kieSession.insert(person);
-        assertEquals(1, kieSession.fireAllRules());
+        assertThat(kieSession.fireAllRules()).isEqualTo(1);
     }
 
     /**
@@ -78,7 +83,7 @@ public class SeniorTest {
         kieSession = kieContainer.newKieSession("dsl");
         Person person = Person.builder().name("LeifChen").age(18).build();
         kieSession.insert(person);
-        assertEquals(1, kieSession.fireAllRules());
+        assertThat(kieSession.fireAllRules()).isEqualTo(1);
     }
 
     /**
@@ -90,6 +95,6 @@ public class SeniorTest {
         Person person = Person.builder().name("LeifChen").age(10).build();
         kieSession.insert(person);
         kieSession.fireAllRules();
-        assertEquals("一班", person.getClassName());
+        assertThat(person.getClassName()).isEqualTo("一班");
     }
 }
